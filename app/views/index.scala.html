@@ -1,0 +1,18 @@
+@(account: Form[CreateAccountForm])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@request.flash.get("success").map { key =>
+   @request.messages(key)
+}
+
+@main("Welcome to Play") {
+  @form(routes.AccountController.addAccount()) {
+		@inputText(account("name"))
+		@CSRF.formField
+
+		<div class="buttons">
+			<input type="submit" value="Add Account"/>
+		</div>
+	}
+}
