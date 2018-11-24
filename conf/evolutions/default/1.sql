@@ -5,13 +5,13 @@ CREATE TABLE IF NOT EXISTS account (
   name varchar(20) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE diary (
+CREATE TABLE IF NOT EXISTS diary (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  accountid int,
+  accountid int NOT NULL,
+  imageid int,
   title varchar(100),
-  body text,
-  photo BLOB,
-  FOREIGN KEY(accountid) REFERENCES account(id)
+  body text
+--   FOREIGN KEY(accountid) REFERENCES account(id)
 ) ENGINE=InnoDB;
 
 # --- !Downs

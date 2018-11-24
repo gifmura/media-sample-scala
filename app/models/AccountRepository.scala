@@ -24,7 +24,7 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impl
   def create(name: String):Future[Account] = db.run{
     (accounts.map(p =>(p.name))
       returning accounts.map(_.id)
-      into ((aname, id) => Account(id, aname))
+      into ((_name, id) => Account(id, _name))
       ) += (name)
   }
 

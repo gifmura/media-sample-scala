@@ -31,7 +31,7 @@ class AccountController @Inject()(repo: AccountRepository
       },
       account =>{
         repo.create(account.name).map{_ =>
-          Redirect(routes.AccountController.index).flashing("success" -> "user.created")
+          Redirect(routes.AccountController.index).flashing("success" -> "account.created")
         }
       }
     )

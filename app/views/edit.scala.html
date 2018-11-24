@@ -1,0 +1,21 @@
+@(diary: Form[CreateDiaryForm])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@request.flash.get("success").map { key =>
+    @request.messages(key)
+}
+
+@main("Welcome to Play") {
+    @form(routes.DiaryController.archive()) {
+        @inputText(diary("accountId"))
+        @inputText(diary("imageId"))
+        @inputText(diary("title"))
+        @inputText(diary("body"))
+        @CSRF.formField
+
+        <div class="buttons">
+            <input type="submit" value="Add Entry"/>
+        </div>
+    }
+}
