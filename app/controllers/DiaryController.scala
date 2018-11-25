@@ -45,6 +45,18 @@ class DiaryController @Inject()(repo: DiaryRepository
       Ok(Json.toJson(diaries))
     }
   }
+
+  def list = Action.async{ implicit request =>
+    repo.getEntries().map{ p =>
+      Ok(views.html.list(p))
+    }
+  }
+
+  def entry(id:Long) = Action.async{ implicit request =>
+    repo.getEntry(id).map{ p =>
+      Ok(views.html.entry(p.head))
+    }
+  }
 }
 
 case class CreateDiaryForm(accountId:Long, imageId:Option[Long], title:String, body:String)

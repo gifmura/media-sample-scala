@@ -34,4 +34,12 @@ class DiaryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implic
   def list(): Future[Seq[Diary]] = db.run{
     diaries.result
   }
+
+  def getEntries() = db.run{
+    diaries.map(p => (p.id, p.title)).result
+  }
+
+  def getEntry(id:Long): Future[Seq[Diary]] = db.run{
+    diaries.filter(p => p.id === id).result
+  }
 }

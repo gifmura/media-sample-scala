@@ -1,0 +1,11 @@
+@(entries: Seq[(Long, String)])
+<h2>Entry List</h2>
+@import helper._
+
+@main("Entry List") {
+	<ul>
+	@for(entry <- entries) {
+		<li>@entry._2</li>
+	}
+	</ul>
+}
