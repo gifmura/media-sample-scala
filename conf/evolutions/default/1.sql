@@ -2,7 +2,8 @@
 
 CREATE TABLE IF NOT EXISTS account (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  name varchar(20) NOT NULL
+  name varchar(20) NOT NULL PRIMARY KEY,
+  password varchar(20) NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS diary (

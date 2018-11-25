@@ -1,5 +1,5 @@
 @(diary: Form[CreateDiaryForm])(implicit request: MessagesRequestHeader)
-
+<h2>Add Entry</h2>
 @import helper._
 
 @request.flash.get("success").map { key =>

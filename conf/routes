@@ -6,6 +6,8 @@
 GET     /              controllers.AccountController.index
 POST    /account       controllers.AccountController.addAccount
 GET     /accounts      controllers.AccountController.getAccounts
+GET     /login         controllers.AccountController.login
+POST    /attempt       controllers.AccountController.attempt
 
 GET     /edit          controllers.DiaryController.edit
 POST    /archive       controllers.DiaryController.archive

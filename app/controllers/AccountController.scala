@@ -16,7 +16,8 @@ class AccountController @Inject()(repo: AccountRepository
 
   val accountForm: Form[CreateAccountForm] = Form{
     mapping(
-      "name" -> nonEmptyText
+      "name" -> nonEmptyText(1,20),
+      "password" -> nonEmptyText(8,20)
     )(CreateAccountForm.apply)(CreateAccountForm.unapply)
   }
 
@@ -30,8 +31,9 @@ class AccountController @Inject()(repo: AccountRepository
         Future.successful(Ok(views.html.index(errorForm)))
       },
       account =>{
-        repo.create(account.name).map{_ =>
-          Redirect(routes.AccountController.index).flashing("success" -> "account.created")
+        repo.create(account.name, account.password).map{_ =>
+          Redirect(routes.AccountController.index)
+            .flashing("success" -> "account.created")
         }
       }
     )
@@ -42,6 +44,64 @@ class AccountController @Inject()(repo: AccountRepository
       Ok(Json.toJson(accounts))
     }
   }
-}
 
-case class CreateAccountForm(name: String)
+  def login = Action { implicit request =>
+    Ok(views.html.login(accountForm))
+  }
+
+  def attempt = Action.async{ implicit request =>
+    accountForm.bindFromRequest.fold(
+      errorForm =>{
+        Future.successful(Ok(views.html.login(errorForm)))
+      },
+      account =>{
+        repo.isExist(account.name, account.password).map{isExist =>
+          if (isExist == true) {
+            Redirect(routes.AccountController.login)
+              .flashing("success" -> "You are logged in.")
+              .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
+          } else {
+            Redirect(routes.AccountController.login)
+              .flashing("error" -> "Invalid username/password.")
+          }
+        }
+//        val trueRes = Await.result(repo.isExist(account.name, account.password), Duration.Inf)
+//        if (trueRes) {
+//          Redirect(routes.AccountController.login)
+//            .flashing("info" -> "You are logged in.")
+//            .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
+//        } else {
+//          Redirect(routes.AccountController.login)
+//            .flashing("error" -> "Invalid username/password.")
+//        }
+      }
+    )
+  }
+
+//  def attempt_ = Action { implicit request =>
+//    val errorFunction = { formWithErrors: Form[Account] =>
+//      // form validation/binding failed...
+//      BadRequest(views.html.login(formWithErrors, formSubmitUrl))
+//    }
+//    val successFunction = { account: Account =>
+//      // form validation/binding succeeded ...
+//      val trueRes = Await.result(repo.isExist(account.name, account.password), Duration.Inf)
+//      if (trueRes) {
+//        Redirect(routes.AccountController.login)
+//          .flashing("info" -> "You are logged in.")
+//          .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
+//      } else {
+//        Redirect(routes.AccountController.login)
+//          .flashing("error" -> "Invalid username/password.")
+//      }
+//    }
+//    val formValidationResult: Form[Account] = accountForm.bindFromRequest
+//    formValidationResult.fold(
+//      errorFunction,
+//      successFunction
+//    )
+//  }
+}
+//val isExist = repo.isExist()
+
+case class CreateAccountForm(name:String, password:String)
