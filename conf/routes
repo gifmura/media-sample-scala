@@ -2,8 +2,11 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Home
+GET     /               controllers.EntryController.index
+
 # AccountController
-GET     /               controllers.AccountController.index
+GET     /register       controllers.AccountController.register
 POST    /account        controllers.AccountController.addAccount
 GET     /accounts       controllers.AccountController.getAccounts
 GET     /login          controllers.AccountController.login

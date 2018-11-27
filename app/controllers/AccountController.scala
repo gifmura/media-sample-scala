@@ -21,18 +21,18 @@ class AccountController @Inject()(repo: AccountRepository
     )(CreateAccountForm.apply)(CreateAccountForm.unapply)
   }
 
-  def index = Action { implicit request =>
-    Ok(views.html.index(accountForm))
+  def register = Action { implicit request =>
+    Ok(views.html.register(accountForm))
   }
 
   def addAccount = Action.async{ implicit request =>
     accountForm.bindFromRequest.fold(
       errorForm =>{
-        Future.successful(Ok(views.html.index(errorForm)))
+        Future.successful(Ok(views.html.register(errorForm)))
       },
       account =>{
         repo.create(account.name, account.password).map{_ =>
-          Redirect(routes.AccountController.index)
+          Redirect(routes.LandingPageController.showLandingPage())
             .flashing("success" -> "account.created")
         }
       }

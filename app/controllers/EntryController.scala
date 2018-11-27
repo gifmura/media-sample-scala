@@ -23,6 +23,10 @@ class EntryController @Inject()(repo: EntryRepository
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
+  def index = Action { implicit request =>
+    Redirect(routes.EntryController.list())
+  }
+
   def edit = Action  { implicit request =>
     Ok(views.html.edit(entryForm))
   }

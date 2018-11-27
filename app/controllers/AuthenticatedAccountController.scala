@@ -11,7 +11,7 @@ class AuthenticatedAccountController @Inject()(
 
   def logout = authenticatedUserAction { implicit request: Request[AnyContent] =>
     // docs: “withNewSession ‘discards the whole (old) session’”
-    Redirect(routes.AccountController.index)
+    Redirect(routes.AccountController.register)
       .flashing("info" -> "You are logged out.")
       .withNewSession
   }
