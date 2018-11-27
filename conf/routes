@@ -12,6 +12,7 @@ POST    /attempt        controllers.AccountController.attempt
 GET     /list           controllers.DiaryController.list
 GET     /edit           controllers.DiaryController.edit
 POST    /archive        controllers.DiaryController.archive
+GET     /entry/:id      controllers.DiaryController.entry(id:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file  controllers.Assets.versioned(path="/public", file: Asset)
