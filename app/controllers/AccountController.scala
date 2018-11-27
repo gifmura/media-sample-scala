@@ -57,7 +57,7 @@ class AccountController @Inject()(repo: AccountRepository
       account =>{
         repo.isExist(account.name, account.password).map{isExist =>
           if (isExist == true) {
-            Redirect(routes.AccountController.login)
+            Redirect(routes.LandingPageController.showLandingPage)
               .flashing("success" -> "You are logged in.")
               .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
           } else {
