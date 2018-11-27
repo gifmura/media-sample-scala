@@ -11,7 +11,7 @@
 @main("Please login") {
   @form(routes.AccountController.attempt()) {
 		@inputText(account("name"))
-	    @inputText(account("password"))
+	    @inputPassword(account("password"))
 		@CSRF.formField
 
 		<div class="buttons">

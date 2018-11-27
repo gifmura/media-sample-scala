@@ -2,14 +2,14 @@ package models
 
 import play.api.libs.json.Json
 
-case class Diary(
+case class Entry(
                 id:Long,
                 accountId:Long,
-                imageId:Option[Long],
+                imageUrl:Option[String],
                 title:String,
                 body:String
                 )
 
-object Diary{
-  implicit val diaryFormat = Json.format[Diary]
+object Entry{
+  implicit val entryFormat = Json.format[Entry]
 }

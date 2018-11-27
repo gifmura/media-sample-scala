@@ -9,32 +9,32 @@ import play.api.mvc.{MessagesAbstractController, MessagesControllerComponents}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DiaryController @Inject()(repo: DiaryRepository
+class EntryController @Inject()(repo: EntryRepository
                                   , cc: MessagesControllerComponents
                                  )(implicit ec: ExecutionContext)
   extends MessagesAbstractController(cc) {
 
-  val diaryForm: Form[CreateDiaryForm] = Form{
+  val entryForm: Form[CreateEntryForm] = Form{
     mapping(
       "accountId" -> longNumber,
-      "imageId" -> optional(longNumber),
+      "imageUrl" -> optional(text),
       "title" -> nonEmptyText,
       "body" -> nonEmptyText
-    )(CreateDiaryForm.apply)(CreateDiaryForm.unapply)
+    )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
   def edit = Action  { implicit request =>
-    Ok(views.html.edit(diaryForm))
+    Ok(views.html.edit(entryForm))
   }
 
   def archive = Action.async { implicit request =>
-    diaryForm.bindFromRequest.fold(
+    entryForm.bindFromRequest.fold(
       errorForm => {
         Future.successful(Ok(views.html.edit(errorForm)))
       },
-      diary => {
-        repo.create(diary.accountId, diary.imageId, diary.title, diary.body).map { _ =>
-          Redirect(routes.DiaryController.edit).flashing("success" -> "entry.created")
+      entry => {
+        repo.create(entry.accountId, entry.imageUrl, entry.title, entry.body).map { _ =>
+          Redirect(routes.LandingPageController.showLandingPage()).flashing("success" -> "entry.created")
         }
       }
     )
@@ -59,4 +59,4 @@ class DiaryController @Inject()(repo: DiaryRepository
   }
 }
 
-case class CreateDiaryForm(accountId:Long, imageId:Option[Long], title:String, body:String)
+case class CreateEntryForm(accountId:Long, imageUrl:Option[String], title:String, body:String)

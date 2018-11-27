@@ -1,4 +1,4 @@
-@(diary: Form[CreateDiaryForm])(implicit request: MessagesRequestHeader)
+@(diary: Form[CreateEntryForm])(implicit request: MessagesRequestHeader)
 <h2>Add Entry</h2>
 @import helper._
 
@@ -7,9 +7,9 @@
 }
 
 @main("Welcome to Play") {
-    @form(routes.DiaryController.archive()) {
+    @form(routes.EntryController.archive()) {
         @inputText(diary("accountId"))
-        @inputText(diary("imageId"))
+        @inputText(diary("imageUrl"))
         @inputText(diary("title"))
         @inputText(diary("body"))
         @CSRF.formField

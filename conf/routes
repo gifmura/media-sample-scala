@@ -10,10 +10,10 @@ GET     /login          controllers.AccountController.login
 POST    /attempt        controllers.AccountController.attempt
 
 # DiaryController
-GET     /list           controllers.DiaryController.list
-GET     /edit           controllers.DiaryController.edit
-POST    /archive        controllers.DiaryController.archive
-GET     /entry/:id      controllers.DiaryController.entry(id:Long)
+GET     /list           controllers.EntryController.list
+GET     /edit           controllers.EntryController.edit
+POST    /archive        controllers.EntryController.archive
+GET     /entry/:id      controllers.EntryController.entry(id:Long)
 
 #LandingController
 GET     /langing        controllers.LandingPageController.showLandingPage

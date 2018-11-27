@@ -9,11 +9,11 @@
 @main("Account Registration") {
   @form(routes.AccountController.addAccount()) {
 		@inputText(account("name"), 'size -> 20)
-	    @inputText(account("password"), 'size -> 20)
+	    @inputPassword(account("password"), 'size -> 20)
 		@CSRF.formField
 
 		<div class="buttons">
-			<input type="submit" value="Add Account"/>
+			<input type="submit" value="Account Registration"/>
 		</div>
   }
 }

@@ -2,10 +2,11 @@
 @import helper._
 <h2>Entry List</h2>
 <a href="@routes.AccountController.login()">Login</a>
+<a href="@routes.EntryController.edit()">Add Entry</a>
 @main("Entry List") {
 	<ul>
 	@for(entry <- entries) {
-		<li><a href="@routes.DiaryController.entry(entry._1)">@entry._2</a></li>
+		<li><a href="@routes.EntryController.entry(entry._1)">@entry._2</a></li>
 	}
 	</ul>
 }

@@ -4,5 +4,5 @@
 @request.flash.get("success").map { key =>
 	@request.messages(key)
 }
-<a href="@routes.DiaryController.list()">return to top page</a>
+<a href="@routes.EntryController.list()">return to top page</a>
 
