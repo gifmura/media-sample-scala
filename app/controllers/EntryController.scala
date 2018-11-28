@@ -27,7 +27,7 @@ class EntryController @Inject()(repo: EntryRepository
     Redirect(routes.EntryController.list())
   }
 
-  def edit = Action  { implicit request =>
+  def edit = Action { implicit request =>
     Ok(views.html.edit(entryForm))
   }
 
@@ -44,6 +44,7 @@ class EntryController @Inject()(repo: EntryRepository
     )
   }
 
+  // For test.
   def getDiaries = Action.async{ implicit request =>
     repo.list().map{ diaries =>
       Ok(Json.toJson(diaries))

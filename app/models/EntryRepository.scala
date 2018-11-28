@@ -22,24 +22,24 @@ class EntryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implic
     def * = (id, accountId, imageUrl, title, body) <> ((Entry.apply _).tupled, Entry.unapply)
   }
 
-  private val diaries = TableQuery[EntryTable]
+  private val entries = TableQuery[EntryTable]
 
   def create(accountId:Long, imageId: Option[String], title: String, body: String):Future[Entry] = db.run{
-    (diaries.map(p => (p.accountId, p.imageUrl, p.title, p.body))
-      returning diaries.map(_.id)
+    (entries.map(p => (p.accountId, p.imageUrl, p.title, p.body))
+      returning entries.map(_.id)
       into ((titleBody, id) => Entry(id, titleBody._1, titleBody._2, titleBody._3, titleBody._4))
       ) += (accountId, imageId, title, body)
   }
 
   def list(): Future[Seq[Entry]] = db.run{
-    diaries.result
+    entries.result
   }
 
   def getEntries() = db.run{
-    diaries.map(p => (p.id, p.title)).result
+    entries.map(p => (p.id, p.title)).result
   }
 
   def getEntry(id:Long): Future[Seq[Entry]] = db.run{
-    diaries.filter(p => p.id === id).result
+    entries.filter(p => p.id === id).result
   }
 }

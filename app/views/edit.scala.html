@@ -2,10 +2,6 @@
 <h2>Add Entry</h2>
 @import helper._
 
-@request.flash.get("success").map { key =>
-    @request.messages(key)
-}
-
 @main("Welcome to Play") {
     @form(routes.EntryController.archive()) {
         @inputText(diary("accountId"))
