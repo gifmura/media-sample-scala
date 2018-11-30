@@ -1,0 +1,13 @@
+@(entries: Seq[(Long, String)])
+<h2>Entry List</h2>
+@import helper._
+<p><a href="@routes.AccountController.register()">Account Registration</a></p>
+<p><a href="@routes.AccountController.login()">Login</a></p>
+<p><a href="@routes.EntryController.edit()">Add Entry</a></p>
+@main("Entry List") {
+	<ul>
+	@for(entry <- entries) {
+		<li><a href="@routes.EntryController.entry(entry._1)">@entry._2</a></li>
+	}
+	</ul>
+}

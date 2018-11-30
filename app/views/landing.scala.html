@@ -1,0 +1,8 @@
+@(implicit request: MessagesRequestHeader)
+<h2>Landing Page</h2>
+@import helper._
+@request.flash.get("success").map { key =>
+	@request.messages(key)
+}
+<a href="@routes.EntryController.list()">return to top page</a>
+

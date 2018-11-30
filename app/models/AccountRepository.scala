@@ -16,19 +16,24 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impl
   private class AccountsTable(tag: Tag) extends Table[Account](tag, "account"){
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def * = (id, name) <> ((Account.apply _).tupled, Account.unapply)
+    def password = column[String]("password")
+    def * = (id, name, password) <> ((Account.apply _).tupled, Account.unapply)
   }
 
   private val accounts = TableQuery[AccountsTable]
 
-  def create(name: String):Future[Account] = db.run{
-    (accounts.map(p =>(p.name))
+  def create(name: String, password: String):Future[Account] = db.run{
+    (accounts.map(p =>(p.name, p.password))
       returning accounts.map(_.id)
-      into ((aname, id) => Account(id, aname))
-      ) += (name)
+      into ((namePassword, id) => Account(id, namePassword._1, namePassword._2))
+      ) += (name, password)
   }
 
   def list(): Future[Seq[Account]] = db.run {
     accounts.result
   }
+
+  def isExist(name: String, password: String) = db.run(
+    accounts.filter(i => i.name === name && i.password === password).exists.result
+  )
 }

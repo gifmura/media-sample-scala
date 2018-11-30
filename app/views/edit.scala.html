@@ -1,0 +1,17 @@
+@(diary: Form[CreateEntryForm])(implicit request: MessagesRequestHeader)
+<h2>Add Entry</h2>
+@import helper._
+
+@main("Welcome to Play") {
+    @form(routes.EntryController.archive()) {
+        @inputText(diary("accountId"))
+        @inputText(diary("imageUrl"))
+        @inputText(diary("title"))
+        @textarea(diary("body"))
+        @CSRF.formField
+
+        <div class="buttons">
+            <input type="submit" value="Add Entry"/>
+        </div>
+    }
+}

@@ -1,18 +1,18 @@
 # --- !Ups
-
 CREATE TABLE IF NOT EXISTS account (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  name varchar(20) NOT NULL
+  name varchar(20) NOT NULL UNIQUE,
+  password varchar(20) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE diary (
+CREATE TABLE IF NOT EXISTS entry (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  accountid int,
+  accountid int NOT NULL,
+  imageurl varchar(50),
   title varchar(100),
-  body text,
-  photo BLOB,
-  FOREIGN KEY(accountid) REFERENCES account(id)
+  body text
 ) ENGINE=InnoDB;
+--   FOREIGN KEY(accountid) REFERENCES account(id)
 
 # --- !Downs
 
