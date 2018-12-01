@@ -1,9 +1,57 @@
-# play-scala-slick-example
+# media-sample-scala
 
-[<img src="https://img.shields.io/travis/playframework/play-scala-slick-example.svg"/>](https://travis-ci.org/playframework/play-scala-slick-example)
+This is a sample project for developers intersted in Scala and Play Framework.
 
-This project demonstrates how to create a simple CRUD application with [Play](https://www.playframework.com/) and [Slick](http://slick.lightbend.com/doc/3.1.1/) using [Play-Slick](https://www.playframework.com/documentation/latest/PlaySlick).
+This project is featuring some basic and general topics like below:
 
-To see an example of a Play application using Slick outside of the application lifecycle, please see:
+* User registration
+* User login
+* List articles
+* Show article details
+* Post articles
+* Relationships between database tables
+* DB transaction
+* Upload image files (TODO)
+* Unit testing (TODO)
 
-<https://github.com/playframework/play-scala-isolated-slick-example/>
+## Preface
+
+This project is intended to be used on Mac OS X or Linux.
+
+And following instructions are only for Mac OS X.
+
+## Usage
+
+First of all, you need to install MySQL.
+
+```bash
+brew install mysql
+mysql.server start
+```
+
+And you need to create db user `sampleuser` with password `changeme` like below.
+
+```bash
+CREATE USER 'sampleuser'@'localhost' IDENTIFIED by 'changeme';
+GRANT ALL PRIVILEGES ON *.* TO 'sampleuser'@'localhost';
+```
+
+And restart MySQL
+
+```bash
+mysql.server restart
+```
+
+After that, you can start this app like below:
+
+```bash
+# Run within media-sample-scala directory.
+sbt run
+```
+
+Now you can visit [`localhost:9000`](http://localhost:9000) from your browser.
+
+## TODO
+
+- [ ] Upload image files
+- [ ] Unit testing
