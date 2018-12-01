@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS account (
 CREATE TABLE IF NOT EXISTS entry (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
   accountid int NOT NULL,
-  imageurl varchar(50),
+  imageurl varchar(100),
   title varchar(100),
   body text
 ) ENGINE=InnoDB;

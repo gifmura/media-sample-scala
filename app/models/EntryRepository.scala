@@ -24,11 +24,11 @@ class EntryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implic
 
   private val entries = TableQuery[EntryTable]
 
-  def create(accountId:Long, imageId: Option[String], title: String, body: String):Future[Entry] = db.run{
+  def create(accountId:Long, imageUrl: Option[String], title: String, body: String):Future[Entry] = db.run{
     (entries.map(p => (p.accountId, p.imageUrl, p.title, p.body))
       returning entries.map(_.id)
       into ((titleBody, id) => Entry(id, titleBody._1, titleBody._2, titleBody._3, titleBody._4))
-      ) += (accountId, imageId, title, body)
+      ) += (accountId, imageUrl, title, body)
   }
 
   def list(): Future[Seq[Entry]] = db.run{
