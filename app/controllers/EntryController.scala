@@ -36,8 +36,10 @@ class EntryController @Inject()(repo: EntryRepository
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
-  def index = Action { implicit request =>
-    Redirect(routes.EntryController.list())
+  def index = Action.async { implicit request =>
+    repo.getEntries().map{ p =>
+      Ok(views.html.list(p))
+    }
   }
 
   def edit = Action { implicit request =>
