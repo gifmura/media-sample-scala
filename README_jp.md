@@ -44,6 +44,12 @@ MySQLを再起動してください。
 mysql.server restart
 ```
 
+次に、以下のように画像ファイルを保存するためのディレクトリを作成してください。
+
+```bash
+mkdir /tmp/mediasample
+```
+
 その後、次のようにこのアプリを起動することができます。
 
 ```bash

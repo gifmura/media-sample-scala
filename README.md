@@ -43,6 +43,12 @@ And restart MySQL
 mysql.server restart
 ```
 
+Next, you need to create a directory to save image files like below.
+
+```bash
+mkdir /tmp/mediasample
+```
+
 After that, you can start this app like below:
 
 ```bash
