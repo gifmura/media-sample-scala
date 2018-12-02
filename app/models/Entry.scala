@@ -5,7 +5,6 @@ import play.api.libs.json.Json
 case class Entry(
                 id:Long,
                 accountId:Long,
-                imageUrl:Option[String],
                 title:String,
                 body:String
                 )

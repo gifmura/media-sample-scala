@@ -6,19 +6,20 @@
 GET     /               controllers.EntryController.index
 
 # AccountController
-GET     /register       controllers.AccountController.register
-POST    /account        controllers.AccountController.addAccount
-GET     /login          controllers.AccountController.login
-POST    /attempt        controllers.AccountController.attempt
+GET     /register              controllers.AccountController.register
+POST    /account               controllers.AccountController.addAccount
+GET     /login                 controllers.AccountController.login
+POST    /attempt               controllers.AccountController.attempt
 
-# DiaryController
-GET     /list           controllers.EntryController.list
-GET     /edit           controllers.EntryController.edit
-POST    /archive        controllers.EntryController.archive
-GET     /entry/:id      controllers.EntryController.entry(id:Long)
+# EntryController
+GET     /list                  controllers.EntryController.list
+GET     /edit                  controllers.EntryController.edit
+POST    /archive               controllers.EntryController.archive
+GET     /entry/:id             controllers.EntryController.entry(id:Long)
+GET     /image/:entryId        controllers.EntryController.image(entryId:Long)
 
 #LandingController
-GET     /langing        controllers.LandingPageController.showLandingPage
+GET     /langing               controllers.LandingPageController.showLandingPage
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file  controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file          controllers.Assets.versioned(path="/public", file: Asset)

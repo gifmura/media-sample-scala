@@ -20,6 +20,7 @@ import play.core.parsers.Multipart.FileInfo
 import scala.concurrent.{ExecutionContext, Future}
 
 class EntryController @Inject()(repo: EntryRepository
+                                  ,imgRepo: ImageRepository
                                   , cc: MessagesControllerComponents
                                  )(implicit ec: ExecutionContext)
   extends MessagesAbstractController(cc) {
@@ -50,13 +51,17 @@ class EntryController @Inject()(repo: EntryRepository
       },
       entry => {
         logger.info("insert into entry.")
-        val fileUrl = request.body.file("img").map{
+        val fileUrl = request.body.file("img").flatMap{
           case FilePart(key, filename, contentType, file) =>
             logger.info(s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
-            val path = operateOnTempFile(file)
-            path.toString
+            val size = Files.size(file.toPath)
+            val path = if(size > 0)
+              copyTempFile(file)
+            else null
+            deleteTempFile(file)
+            Option(path)
         }
-        repo.create(entry.accountId, fileUrl, entry.title, entry.body).map { _ =>
+        repo.create(entry.accountId, entry.title, entry.body, fileUrl).map { _ =>
           Redirect(routes.LandingPageController.showLandingPage()).flashing("success" -> "entry.created")
         }
       }
@@ -64,7 +69,7 @@ class EntryController @Inject()(repo: EntryRepository
   }
 
   // For test.
-  def getDiaries = Action.async{ implicit request =>
+  def getEntries = Action.async{ implicit request =>
     repo.list().map{ diaries =>
       Ok(Json.toJson(diaries))
     }
@@ -78,7 +83,22 @@ class EntryController @Inject()(repo: EntryRepository
 
   def entry(id:Long) = Action.async{ implicit request =>
     repo.getEntry(id).map{ p =>
-      Ok(views.html.entry(p.head))
+      val content = p.head
+      Ok(views.html.entry(content))
+    }
+  }
+
+  def image(entryId:Long) = Action.async { implicit request =>
+    val images = imgRepo.getImage(entryId)
+    images.map{p =>
+      val file = p.headOption.map {url =>
+        val file = new File(url)
+        file
+      }
+      file match {
+        case Some(_) => Ok.sendFile(file.get)
+        case None => Ok.sendFile(new File("./Public/images/blank.png"))
+      }
     }
   }
 
@@ -86,7 +106,7 @@ class EntryController @Inject()(repo: EntryRepository
 
   private def handleFilePartAsFile: FilePartHandler[File] = {
     case FileInfo(partName, filename, contentType) =>
-      val path: Path = Files.createTempFile("img", "")
+      val path: Path = Files.createTempFile("img", ".png")
       val fileSink: Sink[ByteString, Future[IOResult]] = FileIO.toPath(path)
       val accumulator: Accumulator[ByteString, IOResult] = Accumulator(fileSink)
       accumulator.map {
@@ -96,13 +116,17 @@ class EntryController @Inject()(repo: EntryRepository
       }
   }
 
-  private def operateOnTempFile(tmpFile: File) = {
+  private def copyTempFile(tmpFile: File) = {
     val src = tmpFile.toPath
     val dest = Paths.get("/","tmp", "mediasample", src.getFileName.toString)
     logger.info(s"dest = ${dest}")
     val newFile = Files.copy(src, dest)
+    newFile.toString
+  }
+
+  private def deleteTempFile(tmpFile: File) = {
+    val src = tmpFile.toPath
     Files.deleteIfExists(src)
-    newFile
   }
 }
 

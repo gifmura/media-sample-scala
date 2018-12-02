@@ -84,7 +84,7 @@
     <orderEntry type="library" name="sbt: javax.inject:javax.inject:1:jar" level="project" />
     <orderEntry type="library" name="sbt: io.jsonwebtoken:jjwt:0.7.0:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: commons-logging:commons-logging:1.2:jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="sbt: commons-io:commons-io:2.5:jar" level="project" />
+    <orderEntry type="library" name="sbt: commons-io:commons-io:2.6:jar" level="project" />
     <orderEntry type="library" name="sbt: commons-codec:commons-codec:1.10:jar" level="project" />
     <orderEntry type="library" name="sbt: com.zaxxer:HikariCP:2.5.1:jar" level="project" />
     <orderEntry type="library" name="sbt: com.typesafe.slick:slick_2.12:3.2.1:jar" level="project" />
