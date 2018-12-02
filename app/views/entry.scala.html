@@ -1,8 +1,9 @@
 @(entry: Entry)
+@file = {@routes.EntryController.image(entry.id)}
 <h2>Entry Detail</h2>
 @import helper._
-
 @main("Entry Detail") {
     <h1>@entry.title</h1>
 	<p>@entry.body</p>
+    <img src="@file" height="100" width="200"/>
 }
