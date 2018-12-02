@@ -11,7 +11,8 @@ This project is featuring some basic and general topics like below:
 * Post articles
 * Relationships between database tables
 * DB transaction
-* Upload image files (TODO)
+* Uploading and Displaying image files
+* Authentication (TODO)
 * Unit testing (TODO)
 
 ## Preface
@@ -53,5 +54,6 @@ Now you can visit [`localhost:9000`](http://localhost:9000) from your browser.
 
 ## TODO
 
-- [ ] Upload image files
-- [ ] Unit testing
+- [ ] Correspond the uploading and displaying of images with multiple extensions.
+- [ ] Authentication.
+- [ ] Unit testing.
