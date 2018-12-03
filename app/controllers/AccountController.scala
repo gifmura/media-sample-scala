@@ -9,15 +9,15 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountController @Inject()(repo: AccountRepository
-                                  , cc: MessagesControllerComponents
-                                 )(implicit ec: ExecutionContext)
-  extends MessagesAbstractController(cc) {
+class AccountController @Inject()(
+    repo: AccountRepository,
+    cc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+    extends MessagesAbstractController(cc) {
 
-  val accountForm: Form[CreateAccountForm] = Form{
+  val accountForm: Form[CreateAccountForm] = Form {
     mapping(
-      "name" -> nonEmptyText(1,20),
-      "password" -> nonEmptyText(8,20)
+      "name" -> nonEmptyText(1, 20),
+      "password" -> nonEmptyText(8, 20)
     )(CreateAccountForm.apply)(CreateAccountForm.unapply)
   }
 
@@ -25,13 +25,13 @@ class AccountController @Inject()(repo: AccountRepository
     Ok(views.html.register(accountForm))
   }
 
-  def addAccount = Action.async{ implicit request =>
+  def addAccount = Action.async { implicit request =>
     accountForm.bindFromRequest.fold(
-      errorForm =>{
+      errorForm => {
         Future.successful(Ok(views.html.register(errorForm)))
       },
-      account =>{
-        repo.create(account.name, account.password).map{_ =>
+      account => {
+        repo.create(account.name, account.password).map { _ =>
           Redirect(routes.LandingPageController.showLandingPage())
             .flashing("success" -> "account.created")
         }
@@ -40,8 +40,8 @@ class AccountController @Inject()(repo: AccountRepository
   }
 
   // For test.
-  def getAccounts = Action.async{ implicit request =>
-    repo.list().map{ accounts =>
+  def getAccounts = Action.async { implicit request =>
+    repo.list().map { accounts =>
       Ok(Json.toJson(accounts))
     }
   }
@@ -50,25 +50,26 @@ class AccountController @Inject()(repo: AccountRepository
     Ok(views.html.login(accountForm))
   }
 
-  def attempt = Action.async{ implicit request =>
+  def attempt = Action.async { implicit request =>
     accountForm.bindFromRequest.fold(
-      errorForm =>{
+      errorForm => {
         Future.successful(Ok(views.html.login(errorForm)))
       },
-      account =>{
-        repo.isExist(account.name, account.password).map{isExist =>
-          if (isExist == true) {
-            Redirect(routes.LandingPageController.showLandingPage)
-              .flashing("success" -> "You are logged in.")
-              .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
-          } else {
-            Redirect(routes.AccountController.login)
-              .flashing("error" -> "Invalid username/password.")
-          }
+      account => {
+        repo.isExist(account.name, account.password).map {
+          isExist =>
+            if (isExist == true) {
+              Redirect(routes.LandingPageController.showLandingPage)
+                .flashing("success" -> "You are logged in.")
+                .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
+            } else {
+              Redirect(routes.AccountController.login)
+                .flashing("error" -> "Invalid username/password.")
+            }
         }
       }
     )
   }
 }
 
-case class CreateAccountForm(name:String, password:String)
+case class CreateAccountForm(name: String, password: String)

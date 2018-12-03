@@ -7,13 +7,14 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:ExecutionContext){
+class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
   import profile.api._
 
-  private class AccountsTable(tag: Tag) extends Table[Account](tag, "account"){
+  private class AccountsTable(tag: Tag) extends Table[Account](tag, "account") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def password = column[String]("password")
@@ -22,11 +23,10 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impl
 
   private val accounts = TableQuery[AccountsTable]
 
-  def create(name: String, password: String):Future[Account] = db.run{
-    (accounts.map(p =>(p.name, p.password))
+  def create(name: String, password: String): Future[Account] = db.run {
+    (accounts.map(p => (p.name, p.password))
       returning accounts.map(_.id)
-      into ((namePassword, id) => Account(id, namePassword._1, namePassword._2))
-      ) += (name, password)
+      into ((namePassword, id) => Account(id, namePassword._1, namePassword._2))) += (name, password)
   }
 
   def list(): Future[Seq[Account]] = db.run {
@@ -34,6 +34,9 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impl
   }
 
   def isExist(name: String, password: String) = db.run(
-    accounts.filter(i => i.name === name && i.password === password).exists.result
+    accounts
+      .filter(i => i.name === name && i.password === password)
+      .exists
+      .result
   )
 }
