@@ -1,10 +1,9 @@
-@(entry: Form[CreateEntryForm])(implicit request: MessagesRequestHeader)
+@(entry: Form[CreateEntryForm])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 <h2>Add Entry</h2>
 @import helper._
 
 @main("Welcome to Play") {
     @form(action = routes.EntryController.archive, 'enctype -> "multipart/form-data") {
-        @inputText(entry("accountId"))
         @inputFile(entry("img"), 'accept->"image/*")
         @inputText(entry("title"))
         @textarea(entry("body"))

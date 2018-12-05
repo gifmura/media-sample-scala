@@ -11,7 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AccountController @Inject()(
     repo: AccountRepository,
-    cc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+    cc: MessagesControllerComponents,
+    authenticatedUserAction: AuthenticatedAccountAction)(
+    implicit ec: ExecutionContext)
     extends MessagesAbstractController(cc) {
 
   val accountForm: Form[CreateAccountForm] = Form {
@@ -56,19 +58,27 @@ class AccountController @Inject()(
         Future.successful(Ok(views.html.login(errorForm)))
       },
       account => {
-        repo.isExist(account.name, account.password).map {
-          isExist =>
-            if (isExist == true) {
-              Redirect(routes.LandingPageController.showLandingPage)
-                .flashing("success" -> "You are logged in.")
-                .withSession(Global.SESSION_ACCOUNTNAME_KEY -> account.name)
-            } else {
-              Redirect(routes.AccountController.login)
-                .flashing("error" -> "Invalid username/password.")
+        repo.getId(account.name, account.password).map {
+          p =>
+            p match {
+              case None =>
+                Redirect(routes.AccountController.login)
+                  .flashing("error" -> "Invalid accountname/password.")
+              case Some(id) =>
+                Redirect(routes.LandingPageController.showLandingPage)
+                  .flashing("success" -> "You are logged in.")
+                  .withSession(Global.SESSION_ACCOUNTID_KEY -> id.toString)
             }
         }
       }
     )
+  }
+
+  def logout = authenticatedUserAction {
+    implicit request: Request[AnyContent] =>
+      Redirect(routes.LandingPageController.showLandingPage())
+        .flashing("info" -> "You are logged out.")
+        .withNewSession
   }
 }
 

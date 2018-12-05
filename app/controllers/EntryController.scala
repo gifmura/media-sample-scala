@@ -22,14 +22,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class EntryController @Inject()(
     repo: EntryRepository,
     imgRepo: ImageRepository,
-    cc: MessagesControllerComponents)(implicit ec: ExecutionContext)
-    extends MessagesAbstractController(cc) {
+    cc: MessagesControllerComponents,
+    authenticatedUserAction: AuthenticatedAccountAction
+)(implicit ec: ExecutionContext)
+    extends MessagesAbstractController(cc)
+    with play.api.i18n.I18nSupport {
 
   private val logger = Logger(this.getClass)
 
   val entryForm: Form[CreateEntryForm] = Form {
     mapping(
-      "accountId" -> longNumber,
       "imageUrl" -> optional(text),
       "title" -> nonEmptyText,
       "body" -> nonEmptyText
@@ -42,38 +44,42 @@ class EntryController @Inject()(
     }
   }
 
-  def edit = Action { implicit request =>
+  def edit = authenticatedUserAction { implicit request =>
+    logger.info(
+      s"AccountId = ${request.session.get(Global.SESSION_ACCOUNTID_KEY).get}")
     Ok(views.html.edit(entryForm))
   }
 
-  def archive = Action(parse.multipartFormData(handleFilePartAsFile)).async {
-    implicit request =>
-      entryForm.bindFromRequest.fold(
-        errorForm => {
-          Future.successful(Ok(views.html.edit(errorForm)))
-        },
-        entry => {
-          logger.info("insert into entry.")
-          val fileUrl = request.body.file("img").flatMap {
-            case FilePart(key, filename, contentType, file) =>
-              logger.info(
-                s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
-              val size = Files.size(file.toPath)
-              val path =
-                if (size > 0)
-                  copyTempFile(file)
-                else null
-              deleteTempFile(file)
-              Option(path)
-          }
-          repo.create(entry.accountId, entry.title, entry.body, fileUrl).map {
-            _ =>
+  def archive =
+    authenticatedUserAction(parse.multipartFormData(handleFilePartAsFile))
+      .async { implicit request =>
+        entryForm.bindFromRequest.fold(
+          errorForm => {
+            Future.successful(Ok(views.html.edit(errorForm)))
+          },
+          entry => {
+            logger.info("insert into entry.")
+            val fileUrl = request.body.file("img").flatMap {
+              case FilePart(key, filename, contentType, file) =>
+                logger.info(
+                  s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
+                val size = Files.size(file.toPath)
+                val path =
+                  if (size > 0)
+                    copyTempFile(file)
+                  else null
+                deleteTempFile(file)
+                Option(path)
+            }
+            val accountId =
+              request.session.get(Global.SESSION_ACCOUNTID_KEY).get.toLong
+            repo.create(accountId, entry.title, entry.body, fileUrl).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")
+            }
           }
-        }
-      )
-  }
+        )
+      }
 
   // For test.
   def getEntries = Action.async { implicit request =>
@@ -90,7 +96,7 @@ class EntryController @Inject()(
 
   def entry(id: Long) = Action.async { implicit request =>
     repo.getEntry(id).map { p =>
-      val content = p.head
+      val content = p.get
       Ok(views.html.entry(content))
     }
   }
@@ -137,7 +143,6 @@ class EntryController @Inject()(
   }
 }
 
-case class CreateEntryForm(accountId: Long,
-                           imageUrl: Option[String],
+case class CreateEntryForm(imageUrl: Option[String],
                            title: String,
                            body: String)
