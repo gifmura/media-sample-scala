@@ -4,5 +4,5 @@ import javax.inject.Singleton
 
 @Singleton
 object Global {
-  val SESSION_ACCOUNTNAME_KEY = "accountname"
+  val SESSION_ACCOUNTID_KEY = "accountid"
 }

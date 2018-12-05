@@ -34,8 +34,8 @@ class EntryRepository @Inject()(
     entries.map(p => (p.id, p.title)).result
   }
 
-  def getEntry(id: Long): Future[Seq[Entry]] = db.run {
-    entries.filter(p => p.id === id).result
+  def getEntry(id: Long) = db.run {
+    entries.filter(p => p.id === id).result.headOption
   }
 
   def create(accountId: Long,

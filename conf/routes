@@ -10,6 +10,7 @@ GET     /register              controllers.AccountController.register
 POST    /account               controllers.AccountController.addAccount
 GET     /login                 controllers.AccountController.login
 POST    /attempt               controllers.AccountController.attempt
+GET     /logout                controllers.AccountController.logout
 
 # EntryController
 GET     /list                  controllers.EntryController.list

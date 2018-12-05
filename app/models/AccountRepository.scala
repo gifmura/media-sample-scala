@@ -33,10 +33,11 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     accounts.result
   }
 
-  def isExist(name: String, password: String) = db.run(
+  def getId(name: String, password: String) = db.run(
     accounts
       .filter(i => i.name === name && i.password === password)
-      .exists
+      .map(p => p.id)
       .result
+      .headOption
   )
 }
