@@ -14,3 +14,5 @@ libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3"
 libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.13"
 libraryDependencies += specs2 % Test
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)

@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS account (
 
 # --- !Downs
 
--- DROP TABLE IF EXISTS account;
+-- DROP TABLE IF EXISTS image;
