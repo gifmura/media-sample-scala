@@ -1,17 +1,18 @@
 # media-sample-scala
 
-This is a sample project for developers intersted in Scala and Play Framework.
+This is a sample project for developers intersted in Scala and Play Framework(2.6.x).
 
 This project is featuring some basic and general topics like below:
 
 * User registration
-* User login
+* Login & Logout
 * List articles
 * Show article details
 * Post articles
 * Relationships between database tables
 * DB transaction
 * Uploading and Displaying image files (only .png)
+* Dockerize this application and run
 * Secure sission (TODO)
 * Unit testing (TODO)
 
@@ -57,6 +58,19 @@ sbt run
 ```
 
 Now you can visit [`localhost:9000`](http://localhost:9000) from your browser.
+
+## Dockerizing
+
+Here is the repository of the application that dockerizing this.
+
+[`gifmura/docker-sample`](https://github.com/gifmura/docker-sample)
+
+If you want, you can build a new docker image like below.
+
+```bash
+# Run within media-sample-scala directory.
+sbt docker:publishLocal
+```
 
 ## TODO
 
