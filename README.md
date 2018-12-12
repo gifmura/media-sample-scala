@@ -44,12 +44,6 @@ And restart MySQL
 mysql.server restart
 ```
 
-Next, you need to create a directory to save image files like below.
-
-```bash
-mkdir /tmp/mediasample
-```
-
 After that, you can start this app like below:
 
 ```bash
@@ -61,7 +55,7 @@ Now you can visit [`localhost:9000`](http://localhost:9000) from your browser.
 
 ## Dockerizing
 
-Here is the repository of the application that dockerizing this.
+Here is the repository of the app that dockerizing this app.
 
 [`gifmura/docker-sample`](https://github.com/gifmura/docker-sample)
 
