@@ -1,5 +1,7 @@
 package models
 
+import java.nio.file.{Files, Paths}
+
 import com.google.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
@@ -10,6 +12,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
+
+  val dir = Paths.get("/", "tmp")
+  val dirp = Paths.get("/", "tmp", "mediasample")
+  if(Files.notExists(dir)) Files.createDirectory(dir)
+  if(Files.notExists(dirp)) Files.createDirectories(dirp)
 
   import dbConfig._
   import profile.api._

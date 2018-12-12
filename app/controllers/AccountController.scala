@@ -67,7 +67,7 @@ class AccountController @Inject()(
               case Some(id) =>
                 Redirect(routes.LandingPageController.showLandingPage)
                   .flashing("success" -> "You are logged in.")
-                  .withSession(Global.SESSION_ACCOUNTID_KEY -> id.toString)
+                  .withSession(Constant.SESSION_ACCOUNTID_KEY -> id.toString)
             }
         }
       }

@@ -14,3 +14,7 @@ libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3"
 libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.13"
 libraryDependencies += specs2 % Test
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
+libraryDependencies += "org.mockito" % "mockito-core" % "2.23.4" % Test
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)

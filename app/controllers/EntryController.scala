@@ -33,7 +33,7 @@ class EntryController @Inject()(
   val entryForm: Form[CreateEntryForm] = Form {
     mapping(
       "imageUrl" -> optional(text),
-      "title" -> nonEmptyText,
+      "title" -> nonEmptyText(1, 100),
       "body" -> nonEmptyText
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
@@ -46,7 +46,7 @@ class EntryController @Inject()(
 
   def edit = authenticatedUserAction { implicit request =>
     logger.info(
-      s"AccountId = ${request.session.get(Global.SESSION_ACCOUNTID_KEY).get}")
+      s"AccountId = ${request.session.get(Constant.SESSION_ACCOUNTID_KEY).get}")
     Ok(views.html.edit(entryForm))
   }
 
@@ -72,7 +72,7 @@ class EntryController @Inject()(
                 Option(path)
             }
             val accountId =
-              request.session.get(Global.SESSION_ACCOUNTID_KEY).get.toLong
+              request.session.get(Constant.SESSION_ACCOUNTID_KEY).get.toLong
             repo.create(accountId, entry.title, entry.body, fileUrl).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")

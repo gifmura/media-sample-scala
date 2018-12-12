@@ -16,7 +16,7 @@ class AuthenticatedAccountAction @Inject()(parser: BodyParsers.Default)(
                               block: (Request[A]) => Future[Result]) = {
     logger.info("ENTERED AuthenticatedAccountAction::invokeBlock ...")
     val maybeAccountId =
-      request.session.get(models.Global.SESSION_ACCOUNTID_KEY)
+      request.session.get(models.Constant.SESSION_ACCOUNTID_KEY)
     maybeAccountId match {
       case None => {
         Future.successful(Forbidden("Dude, you’re not logged in."))
