@@ -3,6 +3,6 @@ package models
 import javax.inject.Singleton
 
 @Singleton
-object Global {
+object Constant {
   val SESSION_ACCOUNTID_KEY = "accountid"
 }
