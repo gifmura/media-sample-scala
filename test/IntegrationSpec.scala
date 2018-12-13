@@ -20,5 +20,34 @@ class IntegrationSpec extends Specification {
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
     }
+
+    "render the register page" in new WithApplication() {
+      val register = route(app, FakeRequest(GET, "/register")).get
+
+      status(register) must equalTo(OK)
+      contentType(register) must beSome.which(_ == "text/html")
+    }
+
+    "render the login page" in new WithApplication() {
+      val login = route(app, FakeRequest(GET, "/login")).get
+
+      status(login) must equalTo(OK)
+      contentType(login) must beSome.which(_ == "text/html")
+    }
+
+    "render the list page" in new WithApplication() {
+      val list = route(app, FakeRequest(GET, "/list")).get
+
+      status(list) must equalTo(OK)
+      contentType(list) must beSome.which(_ == "text/html")
+    }
+
+    "render the langing page" in new WithApplication() {
+      val langing = route(app, FakeRequest(GET, "/langing")).get
+
+      status(langing) must equalTo(OK)
+      contentType(langing) must beSome.which(_ == "text/html")
+    }
+
   }
 }
