@@ -69,6 +69,8 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Unit testing.
-- [ ] Secure sission.
+- [ ] Unit testing
+- [ ] Secure sission
+- [ ] Upload images to Amazon s3
+- [ ] CI / CD by Circle CI
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)
