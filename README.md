@@ -9,12 +9,13 @@ This project is featuring some basic and general topics like below:
 * List articles
 * Show article details
 * Post articles
-* Relationships between database tables
-* DB transaction
-* Uploading and Displaying image files (only .png)
-* Dockerize this application and run
-* Secure sission (TODO)
+* DB relationships
+* DB transactions
+* Uploade and Display image files
+* Dockerize and run
+* Integration testing
 * Unit testing (TODO)
+* Secure sission (TODO)
 
 ## Preface
 
@@ -68,6 +69,6 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Correspond the uploading and displaying of images with multiple extensions.
-- [ ] Secure sission.
 - [ ] Unit testing.
+- [ ] Secure sission.
+- [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)
