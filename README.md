@@ -13,9 +13,8 @@ This project is featuring some basic and general topics like below:
 * DB transactions
 * Uploade and Display image files
 * Dockerize and run
+* Unit testing
 * Integration testing
-* Unit testing (TODO)
-* Secure sission (TODO)
 
 ## Preface
 
@@ -71,6 +70,6 @@ sbt docker:publishLocal
 
 - [ ] Unit testing
 - [ ] Secure sission
-- [ ] Upload images to Amazon s3
+- [ ] Upload images to Amazon S3
 - [ ] CI / CD by Circle CI
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)
