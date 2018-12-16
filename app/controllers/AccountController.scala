@@ -63,7 +63,7 @@ class AccountController @Inject()(
             p match {
               case None =>
                 Redirect(routes.AccountController.login)
-                  .flashing("error" -> "Invalid accountname/password.")
+                  .flashing("error" -> "Invalid name/password.")
               case Some(id) =>
                 Redirect(routes.LandingPageController.showLandingPage)
                   .flashing("success" -> "You are logged in.")
