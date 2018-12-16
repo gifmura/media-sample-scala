@@ -15,8 +15,8 @@ class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
 
   val dir = Paths.get("/", "tmp")
   val dirp = Paths.get("/", "tmp", "mediasample")
-  if(Files.notExists(dir)) Files.createDirectory(dir)
-  if(Files.notExists(dirp)) Files.createDirectories(dirp)
+  if (Files.notExists(dir)) Files.createDirectory(dir)
+  if (Files.notExists(dirp)) Files.createDirectories(dirp)
 
   import dbConfig._
   import profile.api._

@@ -4,7 +4,7 @@
 
 @main("Welcome to Play") {
     @form(action = routes.EntryController.archive, 'enctype -> "multipart/form-data") {
-        @inputFile(entry("img"), 'accept->"image/*")
+        @inputFile(entry("img"), 'accept->"image/png")
         @inputText(entry("title"))
         @textarea(entry("body"))
         @CSRF.formField

@@ -20,7 +20,7 @@ GET     /entry/:id             controllers.EntryController.entry(id:Long)
 GET     /image/:entryId        controllers.EntryController.image(entryId:Long)
 
 #LandingController
-GET     /langing               controllers.LandingPageController.showLandingPage
+GET     /landing               controllers.LandingPageController.showLandingPage
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file          controllers.Assets.versioned(path="/public", file: Asset)
