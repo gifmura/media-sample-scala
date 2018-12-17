@@ -38,6 +38,12 @@ CREATE USER 'sampleuser'@'localhost' IDENTIFIED by 'changeme';
 GRANT ALL PRIVILEGES ON *.* TO 'sampleuser'@'localhost';
 ```
 
+And you also need to create db `playdb` like below.
+
+```bash
+CREATE DATABASE playdb;
+```
+
 And restart MySQL
 
 ```bash
