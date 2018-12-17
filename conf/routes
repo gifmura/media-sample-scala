@@ -7,7 +7,7 @@ GET     /               controllers.EntryController.index
 
 # AccountController
 GET     /register              controllers.AccountController.register
-POST    /account               controllers.AccountController.addAccount
+POST    /account               controllers.AccountController.postAccount
 GET     /login                 controllers.AccountController.login
 POST    /attempt               controllers.AccountController.attempt
 GET     /logout                controllers.AccountController.logout

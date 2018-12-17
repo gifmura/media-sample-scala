@@ -7,7 +7,7 @@
 }
 
 @main("Account Registration") {
-  @form(routes.AccountController.addAccount()) {
+  @form(routes.AccountController.postAccount()) {
 		@inputText(account("name"), 'size -> 20)
 	    @inputPassword(account("password"), 'size -> 20)
 		@CSRF.formField

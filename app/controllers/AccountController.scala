@@ -27,7 +27,7 @@ class AccountController @Inject()(
     Ok(views.html.register(accountForm))
   }
 
-  def addAccount = Action.async { implicit request =>
+  def postAccount: Action[AnyContent] = Action.async { implicit request =>
     accountForm.bindFromRequest.fold(
       errorForm => {
         Future.successful(Ok(views.html.register(errorForm)))
@@ -42,7 +42,7 @@ class AccountController @Inject()(
   }
 
   // For test.
-  def getAccounts = Action.async { implicit request =>
+  def getAccounts: Action[AnyContent] = Action.async { implicit request =>
     repo.list().map { accounts =>
       Ok(Json.toJson(accounts))
     }
@@ -52,23 +52,20 @@ class AccountController @Inject()(
     Ok(views.html.login(accountForm))
   }
 
-  def attempt = Action.async { implicit request =>
+  def attempt: Action[AnyContent] = Action.async { implicit request =>
     accountForm.bindFromRequest.fold(
       errorForm => {
         Future.successful(Ok(views.html.login(errorForm)))
       },
       account => {
-        repo.getId(account.name, account.password).map {
-          p =>
-            p match {
-              case None =>
-                Redirect(routes.AccountController.login)
-                  .flashing("error" -> "Invalid name/password.")
-              case Some(id) =>
-                Redirect(routes.LandingPageController.showLandingPage)
-                  .flashing("success" -> "You are logged in.")
-                  .withSession(Constant.SESSION_ACCOUNTID_KEY -> id.toString)
-            }
+        (repo getId (account.name, account.password)).map {
+          case None =>
+            Redirect(routes.AccountController.login ())
+              .flashing("error" -> "Invalid name/password.")
+          case Some(id) =>
+            Redirect(routes.LandingPageController.showLandingPage ())
+              .flashing("success" -> "You are logged in.")
+              .withSession(Constant.SESSION_ACCOUNTID_KEY -> id.toString)
         }
       }
     )

@@ -19,7 +19,7 @@ class AccountControllerSpec extends PlaySpec with MockitoSugar with StubBodyPars
 
   def stubMessagesControllerComponents() : MessagesControllerComponents = {
     val stub = Helpers.stubControllerComponents()
-    new DefaultMessagesControllerComponents(
+    DefaultMessagesControllerComponents(
       new DefaultMessagesActionBuilderImpl(stubBodyParser(AnyContentAsEmpty),stub.messagesApi)(stub.executionContext),
       DefaultActionBuilder(stub.actionBuilder.parser)(stub.executionContext), stub.parsers, stub.messagesApi, stub.langs, stub.fileMimeTypes,
       stub.executionContext
@@ -42,7 +42,7 @@ class AccountControllerSpec extends PlaySpec with MockitoSugar with StubBodyPars
            |  "password": "$password"
            |}""".stripMargin))
 
-      val result = controller.addAccount.apply(request)
+      val result = controller.postAccount.apply(request)
       val expectedFlash = Flash(Map("success" -> "account.created"))
 
       status(result) must equal(SEE_OTHER)
