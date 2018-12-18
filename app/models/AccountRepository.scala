@@ -29,10 +29,6 @@ class AccountRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
       into ((namePassword, id) => Account(id, namePassword._1, namePassword._2))) += (name, password)
   }
 
-  def list(): Future[Seq[Account]] = db.run {
-    accounts.result
-  }
-
   def getId(name: String, password: String) = db.run(
     accounts
       .filter(i => i.name === name && i.password === password)

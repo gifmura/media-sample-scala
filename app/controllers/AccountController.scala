@@ -4,7 +4,6 @@ import javax.inject._
 import models._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,13 +38,6 @@ class AccountController @Inject()(
         }
       }
     )
-  }
-
-  // For test.
-  def getAccounts: Action[AnyContent] = Action.async { implicit request =>
-    repo.list().map { accounts =>
-      Ok(Json.toJson(accounts))
-    }
   }
 
   def login = Action { implicit request =>
