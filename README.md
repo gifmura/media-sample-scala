@@ -74,8 +74,8 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Unit testing
 - [ ] Secure session
 - [ ] Upload images to Amazon S3
 - [ ] CI / CD by Circle CI
+- [ ] Using Redis as session storage
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)
