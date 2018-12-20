@@ -1,6 +1,7 @@
 @(user: Form[LoginUserForm])(implicit request: MessagesRequestHeader)
-<h2>Login Form</h2>
+
 @import helper._
+
 @request.flash.get("success").map { key =>
 	@request.messages(key)
 }
@@ -8,6 +9,7 @@
 	@request.messages(key)
 }
 
+<h2>Login Form</h2>
 @main("Please login") {
   @form(routes.UserController.attempt()) {
       @inputText(user("email"), 'size -> 50)

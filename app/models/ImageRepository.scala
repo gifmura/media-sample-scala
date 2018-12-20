@@ -1,6 +1,6 @@
 package models
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 import com.google.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
@@ -13,8 +13,8 @@ class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
-  val dir = Paths.get("/", "tmp")
-  val dirp = Paths.get("/", "tmp", "mediasample")
+  val dir: Path = Paths.get("/", "tmp")
+  val dirp: Path = Paths.get("/", "tmp", "mediasample")
   if (Files.notExists(dir)) Files.createDirectory(dir)
   if (Files.notExists(dirp)) Files.createDirectories(dirp)
 
@@ -30,7 +30,8 @@ class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
 
   private val images = TableQuery[ImageTable]
 
-  def create(entryId: Long, url: String) = {
+  def create(entryId: Long, url: String
+  ) = {
     (images.map(p => (p.entryId, p.url))
       returning images.map(_.id)
       into ((entryIdUrl, id) => Image(id, entryIdUrl._1, entryIdUrl._2))) += (entryId, url)

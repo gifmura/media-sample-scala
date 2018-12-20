@@ -15,7 +15,7 @@ trait JsonFormatter {
         val date = dateFormat.parse(ts.as[String])
         JsSuccess(new Timestamp(date.getTime))
       } catch {
-        case e: IllegalArgumentException =>
+        case _: IllegalArgumentException =>
           JsError("Unable to parse timestamp")
       }
     }

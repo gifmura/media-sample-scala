@@ -1,6 +1,6 @@
 # media-sample-scala
 
-This is a sample project for developers intersted in Scala and Play Framework(2.6.x).
+This is a sample project for developers interested in Scala and Play Framework(2.6.x).
 
 This project is featuring some basic and general topics like below:
 

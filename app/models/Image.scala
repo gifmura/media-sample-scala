@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Image(
     id: Long,
@@ -9,5 +9,6 @@ case class Image(
 )
 
 object Image {
-  implicit val imageFormat = Json.format[Image]
+  implicit val imageFormat
+    : OFormat[Image] = Json.format[Image]
 }

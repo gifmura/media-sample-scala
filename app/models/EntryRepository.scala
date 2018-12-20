@@ -30,18 +30,20 @@ class EntryRepository @Inject()(
     entries.result
   }
 
-  def getEntries() = db.run {
+  def getEntries: Future[Seq[
+    (Long, String)
+  ]] = db.run {
     entries.map(p => (p.id, p.title)).result
   }
 
-  def getEntry(id: Long) = db.run {
+  def getEntry(id: Long): Future[Option[Entry]] = db.run {
     entries.filter(p => p.id === id).result.headOption
   }
 
   def create(accountId: Long,
              title: String,
              body: String,
-             url: Option[String]) = {
+             url: Option[String]): Future[Any] = {
     url match {
       case None    => createEntry(accountId, title, body)
       case Some(_) => createEntryImage(accountId, title, body, url.get)
@@ -51,7 +53,7 @@ class EntryRepository @Inject()(
   def createEntryImage(accountId: Long,
                        title: String,
                        body: String,
-                       url: String) = db.run {
+                       url: String): Future[Long] = db.run {
     val action =
       for {
         newId <- (entries returning entries.map(_.id)) += Entry(0,

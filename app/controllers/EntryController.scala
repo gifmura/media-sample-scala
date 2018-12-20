@@ -39,7 +39,7 @@ class EntryController @Inject()(
   }
 
   def index: Action[AnyContent] = Action.async { implicit request =>
-    repo.getEntries().map { p =>
+    repo.getEntries.map { p =>
       Ok(views.html.list(p))
     }
   }
@@ -89,7 +89,7 @@ class EntryController @Inject()(
   }
 
   def list: Action[AnyContent] = Action.async { implicit request =>
-    repo.getEntries().map { p =>
+    repo.getEntries.map { p =>
       Ok(views.html.list(p))
     }
   }

@@ -21,7 +21,7 @@ class AuthenticatedUserAction @Inject()(parser: BodyParsers.Default)(
     maybeUserId match {
       case None =>
         Future.successful(Forbidden("Dude, you’re not logged in."))
-      case Some(u) =>
+      case Some(_) =>
         val res: Future[Result] = block(request)
         res
     }
