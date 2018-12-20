@@ -3,14 +3,14 @@
 # ~~~~
 
 # Home
-GET     /               controllers.EntryController.index
+GET     /                      controllers.EntryController.index
 
-# AccountController
-GET     /register              controllers.AccountController.register
-POST    /account               controllers.AccountController.postAccount
-GET     /login                 controllers.AccountController.login
-POST    /attempt               controllers.AccountController.attempt
-GET     /logout                controllers.AccountController.logout
+# UserController
+GET     /register              controllers.UserController.register
+POST    /user                  controllers.UserController.postUser
+GET     /login                 controllers.UserController.login
+POST    /attempt               controllers.UserController.attempt
+GET     /logout                controllers.UserController.logout
 
 # EntryController
 GET     /list                  controllers.EntryController.list

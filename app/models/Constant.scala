@@ -4,5 +4,5 @@ import javax.inject.Singleton
 
 @Singleton
 object Constant {
-  val SESSION_ACCOUNTID_KEY = "accountid"
+  val SESSION_USER_KEY = "user_id"
 }

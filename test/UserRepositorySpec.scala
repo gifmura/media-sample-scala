@@ -1,14 +1,12 @@
-package models
-
+import models.UserRepository
 import org.scalatestplus.play._
 import play.api.Mode
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AccountRepositorySpec extends PlaySpec {
+class UserRepositorySpec extends PlaySpec {
 
   lazy val appBuilder: GuiceApplicationBuilder =
     new GuiceApplicationBuilder().in(Mode.Test)
@@ -17,13 +15,14 @@ class AccountRepositorySpec extends PlaySpec {
     injector.instanceOf[DatabaseConfigProvider]
 
   val timestamp: Long = System.currentTimeMillis / 1000
-  val model = new AccountRepository(dbConfProvider)
-  val name = s"model2-$timestamp"
+  val model = new UserRepository(dbConfProvider)
+  val email = s"address-$timestamp@media-sample-scala.com"
   val password = "password"
+  val name = s"model2-$timestamp"
 
-  "AccountRepository#create" should {
-    "return account if name and password are correct values" in {
-      val result = model.create(name, password)
+  "UserRepository#create" should {
+    "return user if name and password are correct values" in {
+      val result = model.create(email, password, name)
       result.map { p =>
         assert(p.name == name)
         assert(p.password == password)
@@ -34,8 +33,8 @@ class AccountRepositorySpec extends PlaySpec {
 
   var id: Long = -1
 
-  "AccountRepository#getId" should {
-    "return account id if existing name and password specified" in {
+  "UserRepository#getId" should {
+    "return user id if existing name and password specified" in {
       val result = model.getId(name, password)
       result.map { p =>
         assert(p.value == id)

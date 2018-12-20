@@ -14,7 +14,7 @@ import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
-import play.api.mvc.{MessagesAbstractController, MessagesControllerComponents}
+import play.api.mvc._
 import play.core.parsers.Multipart.FileInfo
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +23,7 @@ class EntryController @Inject()(
     repo: EntryRepository,
     imgRepo: ImageRepository,
     cc: MessagesControllerComponents,
-    authenticatedUserAction: AuthenticatedAccountAction
+    authenticatedUserAction: AuthenticatedUserAction
 )(implicit ec: ExecutionContext)
     extends MessagesAbstractController(cc)
     with play.api.i18n.I18nSupport {
@@ -38,7 +38,7 @@ class EntryController @Inject()(
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
-  def index = Action.async { implicit request =>
+  def index: Action[AnyContent] = Action.async { implicit request =>
     repo.getEntries().map { p =>
       Ok(views.html.list(p))
     }
@@ -46,11 +46,11 @@ class EntryController @Inject()(
 
   def edit = authenticatedUserAction { implicit request =>
     logger.info(
-      s"AccountId = ${request.session.get(Constant.SESSION_ACCOUNTID_KEY).get}")
+      s"UserId = ${request.session.get(Constant.SESSION_USER_KEY).get}")
     Ok(views.html.edit(entryForm))
   }
 
-  def archive =
+  def archive: Action[MultipartFormData[File]] =
     authenticatedUserAction(parse.multipartFormData(handleFilePartAsFile))
       .async { implicit request =>
         entryForm.bindFromRequest.fold(
@@ -62,7 +62,7 @@ class EntryController @Inject()(
             val fileUrl = request.body.file("img").flatMap {
               case FilePart(key, filename, contentType, file) =>
                 logger.info(
-                  s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
+                  s"key = $key, filename = $filename, contentType = $contentType, file = $file")
                 val size = Files.size(file.toPath)
                 val path =
                   if (size > 0)
@@ -71,9 +71,9 @@ class EntryController @Inject()(
                 deleteTempFile(file)
                 Option(path)
             }
-            val accountId =
-              request.session.get(Constant.SESSION_ACCOUNTID_KEY).get.toLong
-            repo.create(accountId, entry.title, entry.body, fileUrl).map { _ =>
+            val userId =
+              request.session.get(Constant.SESSION_USER_KEY).get.toLong
+            repo.create(userId, entry.title, entry.body, fileUrl).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")
             }
@@ -82,26 +82,26 @@ class EntryController @Inject()(
       }
 
   // For test.
-  def getEntries = Action.async { implicit request =>
+  def getEntries: Action[AnyContent] = Action.async { implicit request =>
     repo.list().map { diaries =>
       Ok(Json.toJson(diaries))
     }
   }
 
-  def list = Action.async { implicit request =>
+  def list: Action[AnyContent] = Action.async { implicit request =>
     repo.getEntries().map { p =>
       Ok(views.html.list(p))
     }
   }
 
-  def entry(id: Long) = Action.async { implicit request =>
+  def entry(id: Long): Action[AnyContent] = Action.async { implicit request =>
     repo.getEntry(id).map { p =>
       val content = p.get
       Ok(views.html.entry(content))
     }
   }
 
-  def image(entryId: Long) = Action.async { implicit request =>
+  def image(entryId: Long): Action[AnyContent] = Action.async { implicit request =>
     val images = imgRepo.getImage(entryId)
     images.map { p =>
       val file = p.headOption.map { url =>
@@ -132,7 +132,7 @@ class EntryController @Inject()(
   private def copyTempFile(tmpFile: File) = {
     val src = tmpFile.toPath
     val dest = Paths.get("/", "tmp", "mediasample", src.getFileName.toString)
-    logger.info(s"dest = ${dest}")
+    logger.info(s"dest = $dest")
     val newFile = Files.copy(src, dest)
     newFile.toString
   }

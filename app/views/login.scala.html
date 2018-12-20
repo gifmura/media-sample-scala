@@ -1,4 +1,4 @@
-@(account: Form[CreateAccountForm])(implicit request: MessagesRequestHeader)
+@(user: Form[LoginUserForm])(implicit request: MessagesRequestHeader)
 <h2>Login Form</h2>
 @import helper._
 @request.flash.get("success").map { key =>
@@ -9,10 +9,10 @@
 }
 
 @main("Please login") {
-  @form(routes.AccountController.attempt()) {
-		@inputText(account("name"))
-	    @inputPassword(account("password"))
-		@CSRF.formField
+  @form(routes.UserController.attempt()) {
+      @inputText(user("email"), 'size -> 50)
+      @inputPassword(user("password"), 'size -> 20)
+      @CSRF.formField
 
 		<div class="buttons">
 			<input type="submit" value="Login"/>
