@@ -15,6 +15,7 @@ This project is featuring some basic and general topics like below:
 * Dockerize and Run
 * Unit testing
 * Integration testing
+* Database testing
 
 ## Preface
 
