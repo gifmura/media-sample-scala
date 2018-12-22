@@ -1,7 +1,7 @@
 package controllers
 
 import java.io.File
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 import akka.stream.IOResult
 import akka.stream.scaladsl.{FileIO, Sink}
@@ -58,8 +58,7 @@ class EntryController @Inject()(
             Future.successful(Ok(views.html.edit(errorForm)))
           },
           entry => {
-            logger.info("insert into entry.")
-            val fileUri = request.body.file("img").flatMap {
+            val file = request.body.file("img").map {
               case FilePart(key, filename, contentType, file) =>
                 logger.info(
                   s"key = $key, filename = $filename, contentType = $contentType, file = $file")
@@ -69,11 +68,11 @@ class EntryController @Inject()(
                     copyTempFile(file)
                   else null
                 deleteTempFile(file)
-                Option(path)
+                (Option(path), Option(size))
             }
             val userId =
               request.session.get(Constant.SESSION_USER_KEY).get.toLong
-            repo.create(userId, entry.title, entry.content, fileUri).map { _ =>
+            repo.create(userId, entry.title, entry.content, file.get._1, file.get._2).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")
             }
@@ -131,7 +130,7 @@ class EntryController @Inject()(
 
   private def copyTempFile(tmpFile: File) = {
     val src = tmpFile.toPath
-    val dest = Paths.get("/", "tmp", "mediasample", src.getFileName.toString)
+    val dest = ImageRepository.IMAGE_DIRECTORY.resolve(src.getFileName.toString)
     logger.info(s"dest = $dest")
     val newFile = Files.copy(src, dest)
     newFile.toString

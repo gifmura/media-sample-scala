@@ -4,8 +4,9 @@ import play.api.libs.json.{Json, OFormat}
 
 case class Image(
     id: Long,
-    entryId: Long,
+    entry_id: Long,
     url: String,
+    size: Long
 )
 
 object Image {

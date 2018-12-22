@@ -52,17 +52,19 @@ class EntryRepository @Inject()(
 
   def create(user_id: Long,title: String,
              content: String,
-             uri: Option[String]): Future[Any] = {
+             uri: Option[String],
+             size: Option[Long]): Future[Any] = {
     uri match {
       case None    => createEntry(user_id, title, content)
-      case Some(_) => createEntryImage(user_id, title, content, uri.get)
+      case Some(_) => createEntryImage(user_id, title, content, uri.get, size.get)
     }
   }
 
   def createEntryImage(user_Id: Long,
                        title: String,
                        content: String,
-                       uri: String): Future[Long] = db.run {
+                       uri: String,
+                       size: Long): Future[Long] = db.run {
     val action =
       for {
         newId <- (entries returning entries.map(_.id)) += Entry(0,
@@ -70,7 +72,7 @@ class EntryRepository @Inject()(
                                                                 title,
                                                                 content
           )
-        _ <- imageRepository.create(newId, uri)
+        _ <- imageRepository.create(newId, uri, size)
       } yield newId
     action.transactionally
   }
