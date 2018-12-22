@@ -32,9 +32,9 @@ class EntryController @Inject()(
 
   val entryForm: Form[CreateEntryForm] = Form {
     mapping(
-      "imageUrl" -> optional(text),
+      "imageUri" -> optional(text),
       "title" -> nonEmptyText(1, 100),
-      "body" -> nonEmptyText
+      "content" -> nonEmptyText
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
@@ -59,7 +59,7 @@ class EntryController @Inject()(
           },
           entry => {
             logger.info("insert into entry.")
-            val fileUrl = request.body.file("img").flatMap {
+            val fileUri = request.body.file("img").flatMap {
               case FilePart(key, filename, contentType, file) =>
                 logger.info(
                   s"key = $key, filename = $filename, contentType = $contentType, file = $file")
@@ -73,7 +73,7 @@ class EntryController @Inject()(
             }
             val userId =
               request.session.get(Constant.SESSION_USER_KEY).get.toLong
-            repo.create(userId, entry.title, entry.body, fileUrl).map { _ =>
+            repo.create(userId, entry.title, entry.content, fileUri).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")
             }
@@ -104,8 +104,8 @@ class EntryController @Inject()(
   def image(entryId: Long): Action[AnyContent] = Action.async { implicit request =>
     val images = imgRepo.getImage(entryId)
     images.map { p =>
-      val file = p.headOption.map { url =>
-        val file = new File(url)
+      val file = p.headOption.map { uri =>
+        val file = new File(uri)
         file
       }
       file match {
@@ -143,6 +143,6 @@ class EntryController @Inject()(
   }
 }
 
-case class CreateEntryForm(imageUrl: Option[String],
+case class CreateEntryForm(imageUri: Option[String],
                            title: String,
-                           body: String)
+                           content: String)

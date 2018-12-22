@@ -26,8 +26,9 @@ class UserRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     def registration_time =
       column[Timestamp]("registration_time",
                         O.Default(new Timestamp(new Date().getTime)))
+    def status = column[String]("status", O.Default(User.STATUS_ACTIVE))
     def * =
-      (id, email, password, name, user_type, registration_time) <> ((User.apply _).tupled, User.unapply)
+      (id, email, password, name, user_type, registration_time, status) <> ((User.apply _).tupled, User.unapply)
   }
 
   private val users = TableQuery[UsersTable]

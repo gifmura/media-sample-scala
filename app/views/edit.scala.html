@@ -1,16 +1,21 @@
 @(entry: Form[CreateEntryForm])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
-<h2>Add Entry</h2>
 @import helper._
-
 @main("Welcome to Play") {
-    @form(action = routes.EntryController.archive, 'enctype -> "multipart/form-data") {
-        @inputFile(entry("img"), 'accept->"image/png")
-        @inputText(entry("title"))
-        @textarea(entry("body"))
-        @CSRF.formField
 
-        <div class="buttons">
-            <input type="submit" value="Add Entry"/>
-        </div>
-    }
+    <div id="title">
+        <h1>Add Entry</h1>
+    </div>
+
+    <div id="form-entry">
+        @form(action = routes.EntryController.archive, 'enctype -> "multipart/form-data") {
+            @inputFile(entry("img"), 'accept->"image/png")
+            @inputText(entry("title"), 'size -> 100)
+            @textarea(entry("content"))
+            @CSRF.formField
+
+            <div class="buttons">
+                <input type="submit" value="Add Entry"/>
+            </div>
+        }
+    </div>
 }

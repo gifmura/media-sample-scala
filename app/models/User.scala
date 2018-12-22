@@ -11,11 +11,14 @@ case class User(id: Long,
                 name: String,
                 user_type: String = User.TYPE_NORMAL,
                 registration_time: Timestamp = new Timestamp(
-                  new Date().getTime))
+                  new Date().getTime),
+                status: String = User.STATUS_ACTIVE
+               )
 
 object User extends JsonFormatter {
   implicit val userFormat: OFormat[User] = Json.format[User]
   val TYPE_NORMAL = "NORMAL"
   val TYPE_ADMIN = "ADMIN"
-
+  val STATUS_ACTIVE = "ACTIVE"
+  val STATUS_DELETED = "DELETED"
 }

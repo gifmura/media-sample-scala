@@ -1,9 +1,19 @@
 @(implicit request: MessagesRequestHeader)
 
 @import helper._
+@main("Landing Page"){
 
-<h2>Landing Page</h2>
-@request.flash.get("success").map { key =>
-	@request.messages(key)
+    <div id="title">
+        <h1>Landing Page</h1>
+    </div>
+
+    @request.flash.get("success").map { key =>
+        <div id="msg-success">
+            @request.messages(key)
+        </div>
+    }
+
+    <div id="link-top">
+        <a href="@routes.EntryController.list()">return to top page</a>
+    </div>
 }
-<a href="@routes.EntryController.list()">return to top page</a>

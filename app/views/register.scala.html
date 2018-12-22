@@ -1,20 +1,26 @@
 @(user: Form[CreateUserForm])(implicit request: MessagesRequestHeader)
-<h2>User Registration</h2>
+
 @import helper._
-
-@request.flash.get("success").map { key =>
-   @request.messages(key)
-}
-
 @main("User Registration") {
-  @form(routes.UserController.postUser()) {
-		@inputText(user("email"), 'size -> 50)
-	    @inputPassword(user("password"), 'size -> 20)
-        @inputText(user("name"), 'size -> 20)
-		@CSRF.formField
 
-		<div class="buttons">
-			<input type="submit" value="User Registration"/>
-		</div>
-  }
+    <div id="title">
+        <h1>User Registration</h1>
+    </div>
+
+    @request.flash.get("success").map { key =>
+        @request.messages(key)
+    }
+
+    <div id="form-register">
+        @form(routes.UserController.postUser()) {
+            @inputText(user("email"), 'size -> 50)
+            @inputPassword(user("password"), 'size -> 20)
+            @inputText(user("name"), 'size -> 20)
+            @CSRF.formField
+
+            <div class="buttons">
+                <input type="submit" value="User Registration"/>
+            </div>
+        }
+    </div>
 }
