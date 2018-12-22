@@ -95,8 +95,8 @@ class EntryController @Inject()(
 
   def entry(id: Long): Action[AnyContent] = Action.async { implicit request =>
     repo.getEntry(id).map { p =>
-      val content = p.get
-      Ok(views.html.entry(content))
+      val entry = p.get
+      Ok(views.html.entry(entry))
     }
   }
 

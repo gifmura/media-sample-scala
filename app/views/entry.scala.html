@@ -13,7 +13,7 @@
             <h2>@entry.title</h2>
         </div>
         <div id="entry-content">
-            <p>@entry.content</p>
+            <p>@Html(entry.content.replaceAll("\\n|\\r\\n|\\r", "</p><p>"))</p>
         </div>
         <div id="entry-image">
             <img src="@file"/>
