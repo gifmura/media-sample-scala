@@ -157,32 +157,29 @@ class UserControllerSpec
     }
   }
 
-//  "UserController#logout" should {
-//    "should refresh the session" in {
-//      val mockedUserRepository: UserRepository = mock[UserRepository]
-//
-//      val userId = 1
-//      val request =
-//        FakeRequest()
-//          .withSession((Constant.SESSION_USER_KEY, userId.toString))
-//      val authUserAction = new AuthenticatedUserAction(parser)
-//
-//      val mockedAuthUserAction: AuthenticatedUserAction =
-//        mock[AuthenticatedUserAction]
-//      when(mockedAuthUserAction.invokeBlock(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future(Result(ResponseHeader(200), HttpEntity.NoEntity)))
-//
-//      val controller =
-//        new UserController(mockedUserRepository, cc, authUserAction)
-//
-//      val result = controller.logout.apply(request)
-//      val expectedFlash = Flash(Map("info" -> "You are logged out."))
-//      val expectedSession = Session(Map())
-//
-//      status(result) must equal(SEE_OTHER)
-//      flash(result) must equal(expectedFlash)
-//      session(result) must equal(expectedSession)
-//    }
-//  }
+  "UserController#logout" should {
+    "should refresh the session" in {
+      val mockedUserRepository: UserRepository = mock[UserRepository]
+
+      val userId = 1
+      val request =
+        FakeRequest()
+          .withSession((Constant.SESSION_USER_KEY, userId.toString))
+
+      val app = new GuiceApplicationBuilder().build
+      val action = app.injector.instanceOf[AuthenticatedUserAction]
+
+      val controller =
+        new UserController(mockedUserRepository, cc, action)
+
+      val result = controller.logout.apply(request)
+      val expectedFlash = Flash(Map("info" -> "You are logged out."))
+      val expectedSession = Session(Map())
+
+      status(result) must equal(SEE_OTHER)
+      flash(result) must equal(expectedFlash)
+      session(result) must equal(expectedSession)
+    }
+  }
 
 }
