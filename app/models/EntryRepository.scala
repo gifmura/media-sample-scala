@@ -11,8 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EntryRepository @Inject()(
-    dbConfigProvider: DatabaseConfigProvider,
-    imageRepository: ImageRepository)(implicit ec: ExecutionContext) {
+    dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -50,33 +49,6 @@ class EntryRepository @Inject()(
     entries.filter(p => p.id === id).result.headOption
   }
 
-  def create(user_id: Long,title: String,
-             content: String,
-             uri: Option[String],
-             size: Option[Long]): Future[Any] = {
-    uri match {
-      case None    => createEntry(user_id, title, content)
-      case Some(_) => createEntryImage(user_id, title, content, uri.get, size.get)
-    }
-  }
-
-  def createEntryImage(user_Id: Long,
-                       title: String,
-                       content: String,
-                       uri: String,
-                       size: Long): Future[Long] = db.run {
-    val action =
-      for {
-        newId <- (entries returning entries.map(_.id)) += Entry(0,
-                                                                user_Id,
-                                                                title,
-                                                                content
-          )
-        _ <- imageRepository.create(newId, uri, size)
-      } yield newId
-    action.transactionally
-  }
-
   def createEntry(user_Id: Long, title: String, content: String): Future[Entry] =
     db.run {
       (entries.map(p => (p.user_id, p.title, p.content))
@@ -87,4 +59,10 @@ class EntryRepository @Inject()(
               Entry(id, titleContent._1, titleContent._2, titleContent._3))) += (user_Id, title, content)
     }
 
+  def getActionCreate(user_Id: Long, title: String, content: String) =
+    (entries returning entries.map(_.id)) += Entry(0,
+      user_Id,
+      title,
+      content
+    )
 }

@@ -16,12 +16,13 @@ import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
 import play.core.parsers.Multipart.FileInfo
+import service.EntryService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EntryController @Inject()(
     repo: EntryRepository,
-    imgRepo: ImageRepository,
+    service: EntryService,
     cc: MessagesControllerComponents,
     authenticatedUserAction: AuthenticatedUserAction
 )(implicit ec: ExecutionContext)
@@ -58,7 +59,7 @@ class EntryController @Inject()(
             Future.successful(Ok(views.html.edit(errorForm)))
           },
           entry => {
-            val file = request.body.file("img").map {
+            val imgFile = request.body.file("img").map {
               case FilePart(key, filename, contentType, file) =>
                 logger.info(
                   s"key = $key, filename = $filename, contentType = $contentType, file = $file")
@@ -72,7 +73,7 @@ class EntryController @Inject()(
             }
             val userId =
               request.session.get(Constant.SESSION_USER_KEY).get.toLong
-            repo.create(userId, entry.title, entry.content, file.get._1, file.get._2).map { _ =>
+            service.create(userId, entry.title, entry.content, imgFile.get._1, imgFile.get._2).map { _ =>
               Redirect(routes.LandingPageController.showLandingPage())
                 .flashing("success" -> "entry.created")
             }
@@ -97,20 +98,6 @@ class EntryController @Inject()(
     repo.getEntry(id).map { p =>
       val entry = p.get
       Ok(views.html.entry(entry))
-    }
-  }
-
-  def image(entryId: Long): Action[AnyContent] = Action.async { implicit request =>
-    val images = imgRepo.getImage(entryId)
-    images.map { p =>
-      val file = p.headOption.map { uri =>
-        val file = new File(uri)
-        file
-      }
-      file match {
-        case Some(_) => Ok.sendFile(file.get)
-        case None    => Ok.sendFile(new File("./Public/images/blank.png"))
-      }
     }
   }
 

@@ -9,6 +9,7 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 object ImageRepository{
+  // Please change storage directories.
   val BASE_DIRECTORY: Path = Paths.get("/", "tmp")
   val IMAGE_DIRECTORY: Path = Paths.get("/", "tmp", "media-sample-scala")
 }
@@ -36,7 +37,7 @@ class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
 
   private val images = TableQuery[ImageTable]
 
-  def create(entry_id: Long, uri: String, size: Long
+  def getActionCreate(entry_id: Long, uri: String, size: Long
   ) = {
     (images.map(p => (p.entry_id, p.uri, p.size))
       returning images.map(_.id)

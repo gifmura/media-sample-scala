@@ -17,7 +17,9 @@ GET     /list                  controllers.EntryController.list
 GET     /edit                  controllers.EntryController.edit
 POST    /archive               controllers.EntryController.archive
 GET     /entry/:id             controllers.EntryController.entry(id:Long)
-GET     /image/:entryId        controllers.EntryController.image(entryId:Long)
+
+# ImageController
+GET     /image/:entryId        controllers.ImageController.image(entryId:Long)
 
 #LandingController
 GET     /landing               controllers.LandingPageController.showLandingPage
