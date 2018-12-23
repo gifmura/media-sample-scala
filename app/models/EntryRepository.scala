@@ -35,10 +35,6 @@ class EntryRepository @Inject()(
 
   private val entries = TableQuery[EntryTable]
 
-  def list(): Future[Seq[Entry]] = db.run {
-    entries.result
-  }
-
   def getEntries: Future[Seq[
     (Long, String)
   ]] = db.run {
@@ -49,7 +45,7 @@ class EntryRepository @Inject()(
     entries.filter(p => p.id === id).result.headOption
   }
 
-  def createEntry(user_Id: Long, title: String, content: String): Future[Entry] =
+  def create(user_Id: Long, title: String, content: String): Future[Entry] =
     db.run {
       (entries.map(p => (p.user_id, p.title, p.content))
         returning entries.map(_.id)

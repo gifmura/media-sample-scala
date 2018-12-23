@@ -16,6 +16,7 @@ This project is featuring some basic and general topics like below:
 * Unit testing
 * Integration testing
 * Database testing
+* Service layer
 
 ## Preface
 

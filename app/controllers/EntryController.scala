@@ -11,7 +11,6 @@ import models._
 import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.Json
 import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
@@ -80,13 +79,6 @@ class EntryController @Inject()(
           }
         )
       }
-
-  // For test.
-  def getEntries: Action[AnyContent] = Action.async { implicit request =>
-    repo.list().map { diaries =>
-      Ok(Json.toJson(diaries))
-    }
-  }
 
   def list: Action[AnyContent] = Action.async { implicit request =>
     repo.getEntries.map { p =>

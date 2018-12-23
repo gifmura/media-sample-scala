@@ -28,7 +28,7 @@ class EntryService @Inject()(dbConfigProvider: DatabaseConfigProvider,
              uri: Option[String],
              size: Option[Long]): Future[Any] = {
     uri match {
-      case None    => entryRepo.createEntry(user_id, title, content)
+      case None    => entryRepo.create(user_id, title, content)
       case Some(_) => createEntryImage(user_id, title, content, uri.get, size.get)
     }
   }
