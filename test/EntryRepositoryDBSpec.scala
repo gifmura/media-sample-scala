@@ -15,7 +15,7 @@ class EntryRepositoryDBSpec extends PlaySpec {
 
   val model = new EntryRepository(dbConfProvider)
   val timestamp: Long = System.currentTimeMillis / 1000
-  // user_id = 1 is the user for testing.
+  // userId = 1 is for testing.
   val userId = 1;
   val title = s"DB-Spec-title-$timestamp"
   val content = "DB-Spec-content-$timestamp"
