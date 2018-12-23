@@ -15,7 +15,7 @@ class AuthenticatedUserAction @Inject()(parser: BodyParsers.Default)(
   override def invokeBlock[A](
       request: Request[A],
       block: Request[A] => Future[Result]): Future[Result] = {
-    logger.info("ENTERED AuthenticatedUserAction::invokeBlock ...")
+    logger.info("Entered invokeBlock.")
     val maybeUserId =
       request.session.get(models.Constant.SESSION_USER_KEY)
     maybeUserId match {
