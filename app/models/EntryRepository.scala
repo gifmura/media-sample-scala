@@ -10,8 +10,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EntryRepository @Inject()(
-    dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+class EntryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -24,10 +24,10 @@ class EntryRepository @Inject()(
     def content = column[String]("content")
     def create_time =
       column[Timestamp]("create_time",
-        O.Default(new Timestamp(new Date().getTime)))
+                        O.Default(new Timestamp(new Date().getTime)))
     def update_time =
       column[Timestamp]("update_time",
-        O.Default(new Timestamp(new Date().getTime)))
+                        O.Default(new Timestamp(new Date().getTime)))
     def status = column[String]("status", O.Default(Entry.STATUS_ACTIVE))
     def * =
       (id, user_id, title, content, create_time, update_time, status) <> ((Entry.apply _).tupled, Entry.unapply)
@@ -56,9 +56,5 @@ class EntryRepository @Inject()(
     }
 
   def getActionCreate(user_Id: Long, title: String, content: String) =
-    (entries returning entries.map(_.id)) += Entry(0,
-      user_Id,
-      title,
-      content
-    )
+    (entries returning entries.map(_.id)) += Entry(0, user_Id, title, content)
 }

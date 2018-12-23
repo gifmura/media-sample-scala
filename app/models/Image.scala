@@ -10,6 +10,5 @@ case class Image(
 )
 
 object Image {
-  implicit val imageFormat
-    : OFormat[Image] = Json.format[Image]
+  implicit val imageFormat: OFormat[Image] = Json.format[Image]
 }

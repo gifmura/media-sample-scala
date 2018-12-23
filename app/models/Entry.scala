@@ -10,10 +10,8 @@ case class Entry(
     user_id: Long,
     title: String,
     content: String,
-    create_time: Timestamp = new Timestamp(
-      new Date().getTime),
-    update_time: Timestamp = new Timestamp(
-      new Date().getTime),
+    create_time: Timestamp = new Timestamp(new Date().getTime),
+    update_time: Timestamp = new Timestamp(new Date().getTime),
     status: String = Entry.STATUS_ACTIVE
 )
 

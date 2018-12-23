@@ -72,10 +72,16 @@ class EntryController @Inject()(
             }
             val userId =
               request.session.get(Constant.SESSION_USER_KEY).get.toLong
-            service.create(userId, entry.title, entry.content, imgFile.get._1, imgFile.get._2).map { _ =>
-              Redirect(routes.LandingPageController.showLandingPage())
-                .flashing("success" -> "entry.created")
-            }
+            service
+              .create(userId,
+                      entry.title,
+                      entry.content,
+                      imgFile.get._1,
+                      imgFile.get._2)
+              .map { _ =>
+                Redirect(routes.LandingPageController.showLandingPage())
+                  .flashing("success" -> "entry.created")
+              }
           }
         )
       }
