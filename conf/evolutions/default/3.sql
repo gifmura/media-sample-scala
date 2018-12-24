@@ -2,9 +2,10 @@
 
 CREATE TABLE IF NOT EXISTS image (
   id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  entryid int NOT NULL,
-  url varchar(100) NOT NULL,
-  FOREIGN KEY(entryid) REFERENCES entry(id) ON UPDATE CASCADE
+  entry_id int NOT NULL,
+  uri varchar(200) NOT NULL,
+  size int NOT NULL,
+  FOREIGN KEY(entry_id) REFERENCES entry(id) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 # --- !Downs

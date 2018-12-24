@@ -1,19 +1,26 @@
-@(account: Form[CreateAccountForm])(implicit request: MessagesRequestHeader)
-<h2>Account Registration</h2>
+@(user: Form[CreateUserForm])(implicit request: MessagesRequestHeader)
+
 @import helper._
+@main("User Registration") {
 
-@request.flash.get("success").map { key =>
-   @request.messages(key)
-}
+    <div id="title">
+        <h1>User Registration</h1>
+    </div>
 
-@main("Account Registration") {
-  @form(routes.AccountController.addAccount()) {
-		@inputText(account("name"), 'size -> 20)
-	    @inputPassword(account("password"), 'size -> 20)
-		@CSRF.formField
+    @request.flash.get("success").map { key =>
+        @request.messages(key)
+    }
 
-		<div class="buttons">
-			<input type="submit" value="Account Registration"/>
-		</div>
-  }
+    <div id="form-register">
+        @form(routes.UserController.postUser()) {
+            @inputText(user("email"), 'size -> 50)
+            @inputPassword(user("password"), 'size -> 20)
+            @inputText(user("name"), 'size -> 20)
+            @CSRF.formField
+
+            <div class="buttons">
+                <input type="submit" value="User Registration"/>
+            </div>
+        }
+    </div>
 }

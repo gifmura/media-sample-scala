@@ -1,6 +1,6 @@
 package models
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 import com.google.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
@@ -8,36 +8,46 @@ import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
+object ImageRepository {
+  // Please change storage directories.
+  val BASE_DIRECTORY: Path = Paths.get("/", "tmp")
+  val IMAGE_DIRECTORY: Path = Paths.get("/", "tmp", "media-sample-scala")
+}
+
 @Singleton
 class ImageRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
-  val dir = Paths.get("/", "tmp")
-  val dirp = Paths.get("/", "tmp", "mediasample")
-  if (Files.notExists(dir)) Files.createDirectory(dir)
-  if (Files.notExists(dirp)) Files.createDirectories(dirp)
+  val baseDir: Path = ImageRepository.BASE_DIRECTORY
+  val imageDir: Path = ImageRepository.IMAGE_DIRECTORY
+  if (Files.notExists(baseDir)) Files.createDirectory(baseDir)
+  if (Files.notExists(imageDir)) Files.createDirectories(imageDir)
 
   import dbConfig._
   import profile.api._
 
   private class ImageTable(tag: Tag) extends Table[Image](tag, "image") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def entryId = column[Long]("entryId")
-    def url = column[String]("url")
-    def * = (id, entryId, url) <> ((Image.apply _).tupled, Image.unapply)
+    def entry_id = column[Long]("entry_id")
+    def uri = column[String]("uri", O.Unique)
+    def size = column[Long]("size")
+    def * = (id, entry_id, uri, size) <> ((Image.apply _).tupled, Image.unapply)
   }
 
   private val images = TableQuery[ImageTable]
 
-  def create(entryId: Long, url: String) = {
-    (images.map(p => (p.entryId, p.url))
+  def getActionCreate(entry_id: Long, uri: String, size: Long) = {
+    (images.map(p => (p.entry_id, p.uri, p.size))
       returning images.map(_.id)
-      into ((entryIdUrl, id) => Image(id, entryIdUrl._1, entryIdUrl._2))) += (entryId, url)
+      into (
+          (entryIdUrl,
+           id) =>
+            Image(id, entryIdUrl._1, entryIdUrl._2, entryIdUrl._3))) += (entry_id, uri, size)
   }
 
-  def getImage(entryId: Long): Future[Seq[String]] = db.run {
-    images.filter(p => p.entryId === entryId).map(p => p.url).result
+  def getImage(entry_id: Long): Future[Seq[String]] = db.run {
+    images.filter(p => p.entry_id === entry_id).map(p => p.uri).result
   }
 
 }

@@ -1,21 +1,32 @@
-@(account: Form[CreateAccountForm])(implicit request: MessagesRequestHeader)
-<h2>Login Form</h2>
+@(user: Form[LoginUserForm])(implicit request: MessagesRequestHeader)
+
 @import helper._
-@request.flash.get("success").map { key =>
-	@request.messages(key)
-}
-@request.flash.get("error").map { key =>
-	@request.messages(key)
-}
-
 @main("Please login") {
-  @form(routes.AccountController.attempt()) {
-		@inputText(account("name"))
-	    @inputPassword(account("password"))
-		@CSRF.formField
 
-		<div class="buttons">
-			<input type="submit" value="Login"/>
-		</div>
-	}
+    <div id="title">
+        <h1>Login Form</h1>
+    </div>
+
+    @request.flash.get("success").map { key =>
+        <div id="msg-success">
+            @request.messages(key)
+        </div>
+    }
+    @request.flash.get("error").map { key =>
+        <div id="msg-error">
+            @request.messages(key)
+        </div>
+    }
+
+    <div id="form-login">
+        @form(routes.UserController.attempt()) {
+            @inputText(user("email"), 'size -> 50)
+            @inputPassword(user("password"), 'size -> 20)
+            @CSRF.formField
+
+            <div class="buttons">
+                <input type="submit" value="Login"/>
+            </div>
+        }
+    </div>
 }

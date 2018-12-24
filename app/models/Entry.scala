@@ -1,14 +1,23 @@
 package models
 
-import play.api.libs.json.Json
+import java.sql.Timestamp
+import java.util.Date
+
+import play.api.libs.json.{Json, OFormat}
 
 case class Entry(
     id: Long,
-    accountId: Long,
+    user_id: Long,
     title: String,
-    body: String
+    content: String,
+    create_time: Timestamp = new Timestamp(new Date().getTime),
+    update_time: Timestamp = new Timestamp(new Date().getTime),
+    status: String = Entry.STATUS_ACTIVE
 )
 
-object Entry {
-  implicit val entryFormat = Json.format[Entry]
+object Entry extends JsonFormatter {
+  implicit val entryFormat: OFormat[Entry] = Json.format[Entry]
+  val STATUS_ACTIVE = "ACTIVE"
+  val STATUS_DELETED = "DELETED"
+  val STATUS_DRAFT = "DRAFT"
 }

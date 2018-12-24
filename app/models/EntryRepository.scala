@@ -1,5 +1,8 @@
 package models
 
+import java.sql.Timestamp
+import java.util.Date
+
 import com.google.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
@@ -7,9 +10,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EntryRepository @Inject()(
-    dbConfigProvider: DatabaseConfigProvider,
-    imageRepository: ImageRepository)(implicit ec: ExecutionContext) {
+class EntryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -17,60 +19,42 @@ class EntryRepository @Inject()(
 
   private class EntryTable(tag: Tag) extends Table[Entry](tag, "entry") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def accountId = column[Long]("accountId")
+    def user_id = column[Long]("user_Id")
     def title = column[String]("title")
-    def body = column[String]("body")
+    def content = column[String]("content")
+    def create_time =
+      column[Timestamp]("create_time",
+                        O.Default(new Timestamp(new Date().getTime)))
+    def update_time =
+      column[Timestamp]("update_time",
+                        O.Default(new Timestamp(new Date().getTime)))
+    def status = column[String]("status", O.Default(Entry.STATUS_ACTIVE))
     def * =
-      (id, accountId, title, body) <> ((Entry.apply _).tupled, Entry.unapply)
+      (id, user_id, title, content, create_time, update_time, status) <> ((Entry.apply _).tupled, Entry.unapply)
   }
 
   private val entries = TableQuery[EntryTable]
 
-  def list(): Future[Seq[Entry]] = db.run {
-    entries.result
-  }
-
-  def getEntries() = db.run {
+  def getEntries: Future[Seq[
+    (Long, String)
+  ]] = db.run {
     entries.map(p => (p.id, p.title)).result
   }
 
-  def getEntry(id: Long) = db.run {
+  def getEntry(id: Long): Future[Option[Entry]] = db.run {
     entries.filter(p => p.id === id).result.headOption
   }
 
-  def create(accountId: Long,
-             title: String,
-             body: String,
-             url: Option[String]) = {
-    url match {
-      case None    => createEntry(accountId, title, body)
-      case Some(_) => createEntryImage(accountId, title, body, url.get)
-    }
-  }
-
-  def createEntryImage(accountId: Long,
-                       title: String,
-                       body: String,
-                       url: String) = db.run {
-    val action =
-      for {
-        newId <- (entries returning entries.map(_.id)) += Entry(0,
-                                                                accountId,
-                                                                title,
-                                                                body)
-        _ <- imageRepository.create(newId, url)
-      } yield newId
-    action.transactionally
-  }
-
-  def createEntry(accountId: Long, title: String, body: String): Future[Entry] =
+  def create(user_Id: Long, title: String, content: String): Future[Entry] =
     db.run {
-      (entries.map(p => (p.accountId, p.title, p.body))
+      (entries.map(p => (p.user_id, p.title, p.content))
         returning entries.map(_.id)
         into (
-            (titleBody,
+            (titleContent,
              id) =>
-              Entry(id, titleBody._1, titleBody._2, titleBody._3))) += (accountId, title, body)
+              Entry(id, titleContent._1, titleContent._2, titleContent._3))) += (user_Id, title, content)
     }
 
+  def getActionCreate(user_Id: Long, title: String, content: String) =
+    (entries returning entries.map(_.id)) += Entry(0, user_Id, title, content)
 }

@@ -1,6 +1,6 @@
 # media-sample-scala
 
-This is a sample project for developers intersted in Scala and Play Framework(2.6.x).
+This is a sample project for developers interested in Scala and Play Framework(2.6.x).
 
 This project is featuring some basic and general topics like below:
 
@@ -15,6 +15,8 @@ This project is featuring some basic and general topics like below:
 * Dockerize and Run
 * Unit testing
 * Integration testing
+* Database testing
+* Service layer
 
 ## Preface
 
@@ -74,8 +76,8 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Unit testing
 - [ ] Secure session
 - [ ] Upload images to Amazon S3
 - [ ] CI / CD by Circle CI
+- [ ] Using Redis as session storage
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)

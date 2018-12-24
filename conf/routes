@@ -3,21 +3,23 @@
 # ~~~~
 
 # Home
-GET     /               controllers.EntryController.index
+GET     /                      controllers.EntryController.index
 
-# AccountController
-GET     /register              controllers.AccountController.register
-POST    /account               controllers.AccountController.addAccount
-GET     /login                 controllers.AccountController.login
-POST    /attempt               controllers.AccountController.attempt
-GET     /logout                controllers.AccountController.logout
+# UserController
+GET     /register              controllers.UserController.register
+POST    /user                  controllers.UserController.postUser
+GET     /login                 controllers.UserController.login
+POST    /attempt               controllers.UserController.attempt
+GET     /logout                controllers.UserController.logout
 
 # EntryController
 GET     /list                  controllers.EntryController.list
 GET     /edit                  controllers.EntryController.edit
 POST    /archive               controllers.EntryController.archive
 GET     /entry/:id             controllers.EntryController.entry(id:Long)
-GET     /image/:entryId        controllers.EntryController.image(entryId:Long)
+
+# ImageController
+GET     /image/:entryId        controllers.ImageController.image(entryId:Long)
 
 #LandingController
 GET     /landing               controllers.LandingPageController.showLandingPage

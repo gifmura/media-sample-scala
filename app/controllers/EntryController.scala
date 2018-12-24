@@ -1,7 +1,7 @@
 package controllers
 
 import java.io.File
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 import akka.stream.IOResult
 import akka.stream.scaladsl.{FileIO, Sink}
@@ -11,19 +11,19 @@ import models._
 import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.Json
 import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
-import play.api.mvc.{MessagesAbstractController, MessagesControllerComponents}
+import play.api.mvc._
 import play.core.parsers.Multipart.FileInfo
+import service.EntryService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EntryController @Inject()(
     repo: EntryRepository,
-    imgRepo: ImageRepository,
+    service: EntryService,
     cc: MessagesControllerComponents,
-    authenticatedUserAction: AuthenticatedAccountAction
+    authenticatedUserAction: AuthenticatedUserAction
 )(implicit ec: ExecutionContext)
     extends MessagesAbstractController(cc)
     with play.api.i18n.I18nSupport {
@@ -32,25 +32,25 @@ class EntryController @Inject()(
 
   val entryForm: Form[CreateEntryForm] = Form {
     mapping(
-      "imageUrl" -> optional(text),
+      "imageUri" -> optional(text),
       "title" -> nonEmptyText(1, 100),
-      "body" -> nonEmptyText
+      "content" -> nonEmptyText
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
-  def index = Action.async { implicit request =>
-    repo.getEntries().map { p =>
+  def index: Action[AnyContent] = Action.async { implicit request =>
+    repo.getEntries.map { p =>
       Ok(views.html.list(p))
     }
   }
 
   def edit = authenticatedUserAction { implicit request =>
     logger.info(
-      s"AccountId = ${request.session.get(Constant.SESSION_ACCOUNTID_KEY).get}")
+      s"UserId = ${request.session.get(Constant.SESSION_USER_KEY).get}")
     Ok(views.html.edit(entryForm))
   }
 
-  def archive =
+  def archive: Action[MultipartFormData[File]] =
     authenticatedUserAction(parse.multipartFormData(handleFilePartAsFile))
       .async { implicit request =>
         entryForm.bindFromRequest.fold(
@@ -58,60 +58,46 @@ class EntryController @Inject()(
             Future.successful(Ok(views.html.edit(errorForm)))
           },
           entry => {
-            logger.info("insert into entry.")
-            val fileUrl = request.body.file("img").flatMap {
+            val imgFile = request.body.file("img").map {
               case FilePart(key, filename, contentType, file) =>
                 logger.info(
-                  s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
+                  s"key = $key, filename = $filename, contentType = $contentType, file = $file")
                 val size = Files.size(file.toPath)
                 val path =
                   if (size > 0)
                     copyTempFile(file)
                   else null
                 deleteTempFile(file)
-                Option(path)
+                (Option(path), Option(size))
             }
-            val accountId =
-              request.session.get(Constant.SESSION_ACCOUNTID_KEY).get.toLong
-            repo.create(accountId, entry.title, entry.body, fileUrl).map { _ =>
-              Redirect(routes.LandingPageController.showLandingPage())
-                .flashing("success" -> "entry.created")
-            }
+            val userId =
+              request.session.get(Constant.SESSION_USER_KEY).get.toLong
+            service
+              .create(userId,
+                      entry.title,
+                      entry.content,
+                      imgFile.get._1,
+                      imgFile.get._2)
+              .map { _ =>
+                Redirect(routes.LandingPageController.showLandingPage())
+                  .flashing("success" -> "entry.created")
+              }
           }
         )
       }
 
-  // For test.
-  def getEntries = Action.async { implicit request =>
-    repo.list().map { diaries =>
-      Ok(Json.toJson(diaries))
-    }
-  }
-
-  def list = Action.async { implicit request =>
-    repo.getEntries().map { p =>
+  def list: Action[AnyContent] = Action.async { implicit request =>
+    repo.getEntries.map { p =>
       Ok(views.html.list(p))
     }
   }
 
-  def entry(id: Long) = Action.async { implicit request =>
-    repo.getEntry(id).map { p =>
-      val content = p.get
-      Ok(views.html.entry(content))
-    }
-  }
-
-  def image(entryId: Long) = Action.async { implicit request =>
-    val images = imgRepo.getImage(entryId)
-    images.map { p =>
-      val file = p.headOption.map { url =>
-        val file = new File(url)
-        file
-      }
-      file match {
-        case Some(_) => Ok.sendFile(file.get)
-        case None    => Ok.sendFile(new File("./Public/images/blank.png"))
-      }
+  def entry(id: Long): Action[AnyContent] = Action.async { implicit request =>
+    repo.getEntry(id).map {
+      case Some(p) =>
+        Ok(views.html.entry(p))
+      case None =>
+        (Forbidden("This page does not exist."))
     }
   }
 
@@ -131,8 +117,8 @@ class EntryController @Inject()(
 
   private def copyTempFile(tmpFile: File) = {
     val src = tmpFile.toPath
-    val dest = Paths.get("/", "tmp", "mediasample", src.getFileName.toString)
-    logger.info(s"dest = ${dest}")
+    val dest = ImageRepository.IMAGE_DIRECTORY.resolve(src.getFileName.toString)
+    logger.info(s"dest = $dest")
     val newFile = Files.copy(src, dest)
     newFile.toString
   }
@@ -143,6 +129,6 @@ class EntryController @Inject()(
   }
 }
 
-case class CreateEntryForm(imageUrl: Option[String],
+case class CreateEntryForm(imageUri: Option[String],
                            title: String,
-                           body: String)
+                           content: String)
