@@ -19,7 +19,7 @@ class UserControllerSpec
     with StubBodyParserFactory
     with Results {
 
-  val cc = stubMessagesControllerComponents()
+  val cc: MessagesControllerComponents = stubMessagesControllerComponents()
   val mockedAuthUserAction: AuthenticatedUserAction =
     mock[AuthenticatedUserAction]
 
@@ -48,11 +48,11 @@ class UserControllerSpec
       val controller =
         new UserController(mockedUserRepository, cc, mockedAuthUserAction)
 
-      val request =
+      val request: RequestHeader =
         FakeRequest().withCSRFToken
       val result = controller.register.apply(request)
 
-      status(result) mustBe (OK)
+      status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
     }
   }
@@ -95,11 +95,11 @@ class UserControllerSpec
       val controller =
         new UserController(mockedUserRepository, cc, mockedAuthUserAction)
 
-      val request =
+      val request: RequestHeader =
         FakeRequest().withCSRFToken
       val result = controller.login.apply(request)
 
-      status(result) mustBe (OK)
+      status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
     }
   }

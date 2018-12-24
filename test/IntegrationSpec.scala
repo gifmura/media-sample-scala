@@ -19,7 +19,7 @@ class IntegrationSpec extends Specification {
     val timestamp: Long = System.currentTimeMillis / 1000
 
     "send 404 on a bad request" in new WithApplication {
-      route(app, FakeRequest(GET, "/boum")) must beSome.which(
+      route(app, FakeRequest(GET, "/none-page")) must beSome.which(
         status(_) == NOT_FOUND)
     }
 
@@ -31,7 +31,8 @@ class IntegrationSpec extends Specification {
     }
 
     "render the register page" in new WithApplication() {
-      val register: Future[mvc.Result] = route(app, FakeRequest(GET, "/register")).get
+      val register: Future[mvc.Result] =
+        route(app, FakeRequest(GET, "/register")).get
 
       status(register) must equalTo(OK)
       contentType(register) must beSome.which(_ == "text/html")
@@ -45,9 +46,10 @@ class IntegrationSpec extends Specification {
     }
 
     "render the logout page" in new WithApplication() {
-      val logout: Future[mvc.Result] = route(app,
-                         FakeRequest(GET, "/logout").withSession(
-                           Constant.SESSION_USER_KEY -> userId.toString)).get
+      val logout: Future[mvc.Result] =
+        route(app,
+              FakeRequest(GET, "/logout").withSession(
+                Constant.SESSION_USER_KEY -> userId.toString)).get
       val expectedSession = Session()
 
       status(logout) must equalTo(SEE_OTHER)
@@ -62,25 +64,28 @@ class IntegrationSpec extends Specification {
     }
 
     "render the edit page" in new WithApplication() {
-      val edit: Future[mvc.Result] = route(app,
-                       FakeRequest(GET, "/edit").withSession(
-                         Constant.SESSION_USER_KEY -> userId.toString)).get
+      val edit: Future[mvc.Result] =
+        route(app,
+              FakeRequest(GET, "/edit").withSession(
+                Constant.SESSION_USER_KEY -> userId.toString)).get
 
       status(edit) must equalTo(OK)
       contentType(edit) must beSome.which(_ == "text/html")
     }
 
     "render the 1st entry page" in new WithApplication() {
-      val entry: Future[mvc.Result] = route(app,
-                        FakeRequest(GET, "/entry/1").withSession(
-                          Constant.SESSION_USER_KEY -> userId.toString)).get
+      val entry: Future[mvc.Result] =
+        route(app,
+              FakeRequest(GET, "/entry/1").withSession(
+                Constant.SESSION_USER_KEY -> userId.toString)).get
 
       status(entry) must equalTo(OK)
       contentType(entry) must beSome.which(_ == "text/html")
     }
 
     "render the landing page" in new WithApplication() {
-      val landing: Future[mvc.Result] = route(app, FakeRequest(GET, "/landing")).get
+      val landing: Future[mvc.Result] =
+        route(app, FakeRequest(GET, "/landing")).get
 
       status(landing) must equalTo(OK)
       contentType(landing) must beSome.which(_ == "text/html")
@@ -103,7 +108,7 @@ class IntegrationSpec extends Specification {
     "attempt a login request" in new WithApplication {
       val request: FakeRequest[AnyContentAsJson] =
         FakeRequest("POST", "/attempt").withJsonBody(Json.parse(s"""{
-           |  "name": "hogehoge",
+           |  "name": "dummy-user-name",
            |  "password": "password"
            |}""".stripMargin))
 

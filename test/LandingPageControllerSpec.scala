@@ -13,7 +13,7 @@ class LandingPageControllerSpec
     with StubBodyParserFactory
     with Results {
 
-  val cc = stubMessagesControllerComponents()
+  val cc: MessagesControllerComponents = stubMessagesControllerComponents()
 
   def stubMessagesControllerComponents(): MessagesControllerComponents = {
     val stub = Helpers.stubControllerComponents()
@@ -38,10 +38,10 @@ class LandingPageControllerSpec
     ) {
       val controller =
         new LandingPageController(cc)
-      val request = FakeRequest().withCSRFToken
+      val request: RequestHeader = FakeRequest().withCSRFToken
       val result = controller.showLandingPage().apply(request)
 
-      status(result) mustBe (OK)
+      status(result) mustBe OK
     }
   }
 

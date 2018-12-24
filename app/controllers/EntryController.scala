@@ -93,9 +93,11 @@ class EntryController @Inject()(
   }
 
   def entry(id: Long): Action[AnyContent] = Action.async { implicit request =>
-    repo.getEntry(id).map { p =>
-      val entry = p.get
-      Ok(views.html.entry(entry))
+    repo.getEntry(id).map {
+      case Some(p) =>
+        Ok(views.html.entry(p))
+      case None =>
+        (Forbidden("This page does not exist."))
     }
   }
 

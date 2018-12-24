@@ -72,7 +72,7 @@ class UserController @Inject()(
   }
 
   def logout = authenticatedUserAction {
-      implicit request: Request[AnyContent] =>
+    implicit request: Request[AnyContent] =>
       Redirect(routes.LandingPageController.showLandingPage())
         .flashing("info" -> "You are logged out.")
         .withNewSession

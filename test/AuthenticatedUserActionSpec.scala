@@ -17,30 +17,35 @@ class AuthenticatedUserActionSpec
     with Results {
 
   "AuthenticatedUserAction#invokeBlock" should {
-    "be FORBIDDEN if session is empty" in new WithApplication {
+    "be FORBIDDEN if the session is empty" in new WithApplication {
 
-      val parser = app.injector.instanceOf[BodyParsers.Default]
+      val parser: BodyParsers.Default =
+        app.injector.instanceOf[BodyParsers.Default]
 
       val action =
         new AuthenticatedUserAction(parser)
-      val request = FakeRequest().withSession()
-      val result = action.invokeBlock(request, Matchers.any())
+      val request: FakeRequest[
+        AnyContentAsEmpty.type
+      ] = FakeRequest().withSession()
+      val result: Future[Result] = action.invokeBlock(request, Matchers.any())
 
-      status(result) mustBe (FORBIDDEN)
+      status(result) mustBe FORBIDDEN
     }
 
-    "be the specified status if session has started" in new WithApplication {
+    "be the specified status if the session has started" in new WithApplication {
 
-      val parser = app.injector.instanceOf[BodyParsers.Default]
-      val session = (Constant.SESSION_USER_KEY, 1.toString)
+      val parser: BodyParsers.Default =
+        app.injector.instanceOf[BodyParsers.Default]
+      val session: (String, String) = (Constant.SESSION_USER_KEY, 1.toString)
       val action = new AuthenticatedUserAction(parser)
-      val request = FakeRequest().withSession(session)
+      val request: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest().withSession(session)
       val block: Request[_] => Future[Result] =
         _ => Future.successful(new Status(OK))
 
-      val result = action.invokeBlock(request, block)
+      val result: Future[Result] = action.invokeBlock(request, block)
 
-      status(result) mustBe (OK)
+      status(result) mustBe OK
     }
   }
 

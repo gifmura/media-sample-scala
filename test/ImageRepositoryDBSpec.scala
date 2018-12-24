@@ -9,20 +9,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageRepositoryDBSpec extends PlaySpec {
 
-  lazy val appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().in(Mode.Test)
+  lazy val appBuilder: GuiceApplicationBuilder =
+    new GuiceApplicationBuilder().in(Mode.Test)
   lazy val injector: Injector = appBuilder.injector()
-  lazy val dbConfProvider: DatabaseConfigProvider = injector.instanceOf[DatabaseConfigProvider]
+  lazy val dbConfProvider: DatabaseConfigProvider =
+    injector.instanceOf[DatabaseConfigProvider]
 
   val model = new ImageRepository(dbConfProvider)
   // entryId = 1 is for testing.
-  val entryId = 1;
+  val entryId = 1
   "ImageRepository#getImage" should {
     "return an uri of the image if it was already registered" in {
       val result = model.getImage(entryId)
       result.map { p =>
         val image = p.headOption
-        assert(image != None)
-        image.map{i =>
+        assert(image.isDefined)
+        image.map { i =>
           assert(i.length > 0)
         }
       }
