@@ -15,5 +15,6 @@ libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.13"
 libraryDependencies += specs2 % Test
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
