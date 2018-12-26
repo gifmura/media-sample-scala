@@ -97,7 +97,7 @@ class EntryController @Inject()(
       case Some(p) =>
         Ok(views.html.entry(p))
       case None =>
-        (Forbidden("This page does not exist."))
+        Forbidden("This page does not exist.")
     }
   }
 

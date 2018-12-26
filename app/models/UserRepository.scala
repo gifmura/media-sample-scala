@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import java.util.Date
 
 import com.google.inject.{Inject, Singleton}
+import org.mindrot.jbcrypt.BCrypt
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
@@ -37,22 +38,35 @@ class UserRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
              password: String,
              name: String,
              user_type: String = User.TYPE_NORMAL): Future[User] = db.run {
+    val hashedPassword = getHashedPassword(password)
     (users.map(p => (p.email, p.password, p.name, p.user_type))
       returning users.map(_.id)
       into ((emailPassword,
              id) =>
-              User(id,
-                   emailPassword._1,
-                   emailPassword._2,
-                   emailPassword._3,
-                   emailPassword._4))) += (email, password, name, user_type)
+              User(
+                id,
+                emailPassword._1,
+                emailPassword._2,
+                emailPassword._3,
+                emailPassword._4))) += (email, hashedPassword, name, user_type)
   }
 
   def getId(email: String, password: String): Future[Option[Long]] = db.run {
     users
-      .filter(i => i.email === email && i.password === password)
-      .map(p => p.id)
+      .filter(i => i.email === email)
+      .map(p => (p.id, p.password))
       .result
       .headOption
+      .map {
+        case Some(s) =>
+          if (BCrypt.checkpw(password, s._2)) Option(s._1)
+          else None
+      }
   }
+
+  private def getHashedPassword(password: String): String = {
+    val salt = BCrypt.gensalt()
+    BCrypt.hashpw(password, salt)
+  }
+
 }
