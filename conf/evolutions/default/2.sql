@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS entry (
 
 # --- !Downs
 
--- DROP TABLE IF EXISTS entry;
+DROP TABLE IF EXISTS entry;

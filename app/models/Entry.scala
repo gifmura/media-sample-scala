@@ -3,6 +3,7 @@ package models
 import java.sql.Timestamp
 import java.util.Date
 
+import jp.t2v.lab.play2.pager.{OrderType, Sortable}
 import play.api.libs.json.{Json, OFormat}
 
 case class Entry(
@@ -20,4 +21,15 @@ object Entry extends JsonFormatter {
   val STATUS_ACTIVE = "ACTIVE"
   val STATUS_DELETED = "DELETED"
   val STATUS_DRAFT = "DRAFT"
+
+  val SORT_KEY_ID = "id"
+  val SORT_KEY_TITLE = "title"
+  val SORT_KEY_CREATE = "create_time"
+  val SORT_KEY_UPDATE = "update_time"
+
+  implicit object sortable extends Sortable[Entry] {
+    def default: (String, OrderType) = (SORT_KEY_ID, OrderType.Descending)
+    def acceptableKeys: Set[String] =
+      Set(SORT_KEY_ID, SORT_KEY_TITLE, SORT_KEY_CREATE, SORT_KEY_UPDATE)
+  }
 }

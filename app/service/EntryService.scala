@@ -1,7 +1,8 @@
 package service
 import com.google.inject.Singleton
 import javax.inject.Inject
-import models.{EntryRepository, ImageRepository}
+import jp.t2v.lab.play2.pager.{Pager, SearchResult}
+import models.{Entry, EntryRepository, ImageRepository}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.mvc.{MessagesAbstractController, MessagesControllerComponents}
 import slick.jdbc.JdbcProfile
@@ -30,6 +31,22 @@ class EntryService @Inject()(
       case None => entryRepo.create(user_id, title, content)
       case Some(_) =>
         createEntryImage(user_id, title, content, uri.get, size.get)
+    }
+  }
+
+  def findAll(pager: Pager[Entry]): Future[SearchResult[Entry]] = {
+    var count: Int = 0
+    entryRepo.countAll.map { p =>
+      {
+        p match {
+          case _: Int => count = p
+        }
+      }
+    }
+    entryRepo.findAll(pager.allSorters, pager.limit, pager.offset).map { p =>
+      SearchResult(pager, count) { _ =>
+        p
+      }
     }
   }
 

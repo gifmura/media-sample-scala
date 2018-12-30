@@ -61,6 +61,7 @@ class UserRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
         case Some(s) =>
           if (BCrypt.checkpw(password, s._2)) Option(s._1)
           else None
+        case None => None
       }
   }
 

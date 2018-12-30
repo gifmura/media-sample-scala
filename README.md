@@ -4,11 +4,8 @@ This is a sample project for developers interested in Scala and Play Framework(2
 
 This project is featuring some basic and general topics like below:
 
-* User registration
 * Login & Logout
-* List articles
-* Show article details
-* Post articles
+* Pagination
 * DB relationships
 * DB transactions
 * Upload and Display image files
@@ -46,12 +43,6 @@ And you also need to create db `playdb` like below.
 CREATE DATABASE playdb;
 ```
 
-And restart MySQL
-
-```bash
-mysql.server restart
-```
-
 After that, you can start this app like below:
 
 ```bash
@@ -76,8 +67,7 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Secure session
 - [ ] Upload images to Amazon S3
 - [ ] CI / CD by Circle CI
 - [ ] Using Redis as session storage
-- [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png".)
+- [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png", sorry.)
