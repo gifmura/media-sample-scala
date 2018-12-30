@@ -27,7 +27,6 @@ class IntegrationSpec extends Specification {
       val home: Future[mvc.Result] = route(app, FakeRequest(GET, "/")).get
 
       status(home) must equalTo(SEE_OTHER)
-      contentType(home) must beSome.which(_ == "text/html")
     }
 
     "render the register page" in new WithApplication() {
@@ -91,11 +90,15 @@ class IntegrationSpec extends Specification {
       contentType(landing) must beSome.which(_ == "text/html")
     }
 
+    val email = "dummy-address@media-sample-scala.com"
+    val password = "password"
+
     "post a new user" in new WithApplication {
       val request: FakeRequest[AnyContentAsJson] =
-        FakeRequest("POST", "/user").withJsonBody(Json.parse(s"""{
-           |  "name": "spec-$timestamp",
-           |  "password": "password"
+        FakeRequest("POST", "/postUser").withJsonBody(Json.parse(s"""{
+           |  "email": "$email",
+           |  "password": "$password",
+           |  "name": "integration-test-user"
            |}""".stripMargin))
 
       val user: Future[mvc.Result] = route(app, request).get
@@ -108,8 +111,8 @@ class IntegrationSpec extends Specification {
     "attempt a login request" in new WithApplication {
       val request: FakeRequest[AnyContentAsJson] =
         FakeRequest("POST", "/attempt").withJsonBody(Json.parse(s"""{
-           |  "name": "dummy-user-name",
-           |  "password": "password"
+           |  "email": "$email",
+           |  "password": "$password"
            |}""".stripMargin))
 
       val attempt: Future[mvc.Result] = route(app, request).get
