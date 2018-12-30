@@ -26,7 +26,7 @@ class IntegrationSpec extends Specification {
     "render the index page" in new WithApplication {
       val home: Future[mvc.Result] = route(app, FakeRequest(GET, "/")).get
 
-      status(home) must equalTo(OK)
+      status(home) must equalTo(SEE_OTHER)
       contentType(home) must beSome.which(_ == "text/html")
     }
 

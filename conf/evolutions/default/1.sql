@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS user (
 
 # --- !Downs
 
--- DROP TABLE IF EXISTS image;
+DROP TABLE IF EXISTS image;

@@ -1,32 +1,53 @@
-@(entries: Seq[(Long, String)])
+@(result: SearchResult[Entry])
 
-@import helper._
-@main("Entry List") {
+    @dir(key: String) = @{
+        result.keyOrder(key).map {
+            case OrderType.Ascending => "▲"
+            case OrderType.Descending => "▼"
+        }
+    }
 
-    <div id="title">
-        <h1>Entry List</h1>
-    </div>
+    @main("Entry List") {
 
-    <div id="link-register">
-        <p><a href="@routes.UserController.register()">User Registration</a></p>
-    </div>
-    <div id="link-login">
-        <p><a href="@routes.UserController.login()">Login</a></p>
-    </div>
-    <div id="link-logout">
-        <p><a href="@routes.UserController.logout()">Logout</a></p>
-    </div>
-    <div id="link-edit">
-        <p><a href="@routes.EntryController.edit()">Post Entry</a></p>
-    </div>
-
-    <div id="entries">
-        <div id="link-entry">
-            <ul>
-                @for(entry <- entries) {
-                        <li><a href="@routes.EntryController.entry(entry._1)">@entry._2</a></li>
-                }
-            </ul>
+        <div id="title">
+            <h1>Entry List</h1>
         </div>
-    </div>
-}
+
+        <div id="link-register">
+            <p><a href="@routes.UserController.register()">User Registration</a></p>
+        </div>
+        <div id="link-login">
+            <p><a href="@routes.UserController.login()">Login</a></p>
+        </div>
+        <div id="link-logout">
+            <p><a href="@routes.UserController.logout()">Logout</a></p>
+        </div>
+        <div id="link-edit">
+            <p><a href="@routes.EntryController.edit()">Post Entry</a></p>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><a href="@routes.EntryController.list(result.keyPager("id"))">id</a> @dir("id")</th>
+                    <th><a href="@routes.EntryController.list(result.keyPager("title"))">title</a> @dir("title")</th>
+                    <th><a href="@routes.EntryController.list(result.keyPager("create_time"))">create_time</a> @dir("create_time")</th>
+                    <th><a href="@routes.EntryController.list(result.keyPager("update_time"))">update_time</a> @dir("update_time")</th>
+                </tr>
+            </thead>
+            <tbody>
+            @result.items.map { entry =>
+                <tr>
+                    <td><a href="@routes.EntryController.entry(entry.id)">@entry.id</a></td>
+                    <td><a href="@routes.EntryController.entry(entry.id)">@entry.title</a></td>
+                    <td>@{entry.create_time}</td>
+                    <td>@{entry.update_time}</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <div>
+        @pagination(result, routes.EntryController.list)
+        </div>
+    }

@@ -7,6 +7,7 @@ import akka.stream.IOResult
 import akka.stream.scaladsl.{FileIO, Sink}
 import akka.util.ByteString
 import javax.inject.Inject
+import jp.t2v.lab.play2.pager.Pager
 import models._
 import play.api.Logger
 import play.api.data.Form
@@ -38,10 +39,11 @@ class EntryController @Inject()(
     )(CreateEntryForm.apply)(CreateEntryForm.unapply)
   }
 
-  def index: Action[AnyContent] = Action.async { implicit request =>
-    repo.getEntries.map { p =>
-      Ok(views.html.list(p))
-    }
+  def index(pager: Pager[Entry]): Action[AnyContent] = Action.async {
+    implicit request =>
+      repo.getEntries.map { p =>
+        Redirect(routes.EntryController.list(pager))
+      }
   }
 
   def edit = authenticatedUserAction { implicit request =>
@@ -86,10 +88,11 @@ class EntryController @Inject()(
         )
       }
 
-  def list: Action[AnyContent] = Action.async { implicit request =>
-    repo.getEntries.map { p =>
-      Ok(views.html.list(p))
-    }
+  def list(pager: Pager[Entry]): Action[AnyContent] = Action.async {
+    implicit request =>
+      service.findAll(pager).map { p =>
+        Ok(views.html.list(p))
+      }
   }
 
   def entry(id: Long): Action[AnyContent] = Action.async { implicit request =>

@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import java.util.Date
 
 import com.google.inject.{Inject, Singleton}
+import jp.t2v.lab.play2.pager.{OrderType, Sorter}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
@@ -39,6 +40,46 @@ class EntryRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
     (Long, String)
   ]] = db.run {
     entries.map(p => (p.id, p.title)).result
+  }
+
+  def countAll: Future[Int] = db.run {
+    entries.length.result
+  }
+
+  def findAll(orders: Seq[Sorter[Entry]],
+              limit: Int,
+              offset: Int): Future[Seq[Entry]] = db.run {
+    sortEntry(entries, orders)
+      .drop(offset)
+      .take(limit)
+      .result
+  }
+
+  private def sortEntry(entry: TableQuery[EntryTable],
+                        orders: Seq[Sorter[Entry]])
+    : Query[EntryTable, EntryTable#TableElementType, Seq] = {
+    val order = orders.headOption
+
+    order match {
+      case None => entry.sortBy(_.id.desc)
+      case Some(o) =>
+        o.dir match {
+          case OrderType.Ascending =>
+            o.key match {
+              case Entry.SORT_KEY_ID     => entry.sortBy(_.id.asc)
+              case Entry.SORT_KEY_TITLE  => entry.sortBy(_.title.asc)
+              case Entry.SORT_KEY_CREATE => entry.sortBy(_.create_time.asc)
+              case Entry.SORT_KEY_UPDATE => entry.sortBy(_.update_time.asc)
+            }
+          case OrderType.Descending =>
+            o.key match {
+              case Entry.SORT_KEY_ID     => entry.sortBy(_.id.desc)
+              case Entry.SORT_KEY_TITLE  => entry.sortBy(_.title.desc)
+              case Entry.SORT_KEY_CREATE => entry.sortBy(_.create_time.desc)
+              case Entry.SORT_KEY_UPDATE => entry.sortBy(_.update_time.desc)
+            }
+        }
+    }
   }
 
   def getEntry(id: Long): Future[Option[Entry]] = db.run {

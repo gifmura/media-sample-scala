@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home
-GET     /                      controllers.EntryController.index
+GET     /                      controllers.EntryController.index(pager: Pager[Entry])
 
 # UserController
 GET     /register              controllers.UserController.register
@@ -13,7 +13,7 @@ POST    /attempt               controllers.UserController.attempt
 GET     /logout                controllers.UserController.logout
 
 # EntryController
-GET     /list                  controllers.EntryController.list
+GET     /list                  controllers.EntryController.list(pager: Pager[Entry])
 GET     /edit                  controllers.EntryController.edit
 POST    /archive               controllers.EntryController.archive
 GET     /entry/:id             controllers.EntryController.entry(id:Long)

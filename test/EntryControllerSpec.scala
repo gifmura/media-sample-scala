@@ -1,6 +1,7 @@
 import java.io.File
 
 import controllers.{AuthenticatedUserAction, EntryController}
+import jp.t2v.lab.play2.pager.Pager
 import models.{Constant, Entry, EntryRepository}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -60,7 +61,7 @@ class EntryControllerSpec
 
       val request: RequestHeader =
         FakeRequest().withCSRFToken
-      val result = controller.index.apply(request)
+      val result = controller.index(Pager.default[Entry]).apply(request)
 
       status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
@@ -187,7 +188,7 @@ class EntryControllerSpec
 
       val request: RequestHeader =
         FakeRequest().withCSRFToken
-      val result = controller.list.apply(request)
+      val result = controller.list(Pager.default[Entry]).apply(request)
 
       status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
