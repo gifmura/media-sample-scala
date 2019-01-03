@@ -14,6 +14,7 @@ This project is featuring some basic and general topics like below:
 * Integration testing
 * Database testing
 * Service layer
+* Secure session management with akka
 
 ## Preface
 
@@ -22,6 +23,8 @@ This project is intended to be used on Mac OS X or Linux.
 And following instructions are only for Mac OS X.
 
 ## Usage
+
+*As with all Play projects, you must have JDK 1.8 and sbt installed.*
 
 First of all, you need to install MySQL.
 
@@ -41,6 +44,12 @@ And you also need to create db `playdb` like below.
 
 ```bash
 CREATE DATABASE playdb;
+```
+
+Next, you need to install libsodium.
+
+```bash
+brew install libsodium
 ```
 
 After that, you can start this app like below:
@@ -69,5 +78,4 @@ sbt docker:publishLocal
 
 - [ ] Upload images to Amazon S3
 - [ ] CI / CD by Circle CI
-- [ ] Using Redis as session storage
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png", sorry.)

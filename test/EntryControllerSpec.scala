@@ -1,8 +1,8 @@
 import java.io.File
 
-import controllers.{AuthenticatedUserAction, EntryController}
+import controllers.{EntryController}
 import jp.t2v.lab.play2.pager.Pager
-import models.{Constant, Entry, EntryRepository}
+import models.{Entry, EntryRepository}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
@@ -12,7 +12,7 @@ import play.api.mvc._
 import play.api.test.CSRFTokenHelper._
 import play.api.test.Helpers._
 import play.api.test._
-import service.EntryService
+import services.EntryService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

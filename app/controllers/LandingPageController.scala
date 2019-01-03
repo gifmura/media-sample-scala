@@ -10,7 +10,7 @@ class LandingPageController @Inject()(cc: MessagesControllerComponents)(
     implicit ec: ExecutionContext)
     extends MessagesAbstractController(cc) {
 
-  def showLandingPage = Action { implicit request =>
+  def showLandingPage: Action[AnyContent] = Action { implicit request =>
     Ok(views.html.landing(request))
   }
 }

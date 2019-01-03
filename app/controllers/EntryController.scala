@@ -16,7 +16,7 @@ import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
 import play.core.parsers.Multipart.FileInfo
-import service.EntryService
+import services.EntryService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -24,10 +24,9 @@ class EntryController @Inject()(
     repo: EntryRepository,
     service: EntryService,
     cc: MessagesControllerComponents,
-    authenticatedUserAction: AuthenticatedUserAction
+    userAction: UserInfoAction
 )(implicit ec: ExecutionContext)
-    extends MessagesAbstractController(cc)
-    with play.api.i18n.I18nSupport {
+    extends MessagesAbstractController(cc) {
 
   private val logger = Logger(this.getClass)
 
@@ -41,19 +40,18 @@ class EntryController @Inject()(
 
   def index(pager: Pager[Entry]): Action[AnyContent] = Action.async {
     implicit request =>
-      repo.getEntries.map { p =>
+      repo.getEntries.map { _ =>
         Redirect(routes.EntryController.list(pager))
       }
   }
 
-  def edit = authenticatedUserAction { implicit request =>
-    logger.info(
-      s"UserId = ${request.session.get(Constant.SESSION_USER_KEY).get}")
+  def edit: Action[AnyContent] = userAction { implicit request =>
+    logger.info(s"$SESSION_ID = ${request.session.get(SESSION_ID)}")
     Ok(views.html.edit(entryForm))
   }
 
   def archive: Action[MultipartFormData[File]] =
-    authenticatedUserAction(parse.multipartFormData(handleFilePartAsFile))
+    userAction(parse.multipartFormData(handleFilePartAsFile))
       .async { implicit request =>
         entryForm.bindFromRequest.fold(
           errorForm => {
@@ -73,7 +71,7 @@ class EntryController @Inject()(
                 (Option(path), Option(size))
             }
             val userId =
-              request.session.get(Constant.SESSION_USER_KEY).get.toLong
+              request.userInfo.get.userId.toLong
             service
               .create(userId,
                       entry.title,
@@ -82,7 +80,7 @@ class EntryController @Inject()(
                       imgFile.get._2)
               .map { _ =>
                 Redirect(routes.LandingPageController.showLandingPage())
-                  .flashing("success" -> "entry.created")
+                  .flashing(FLASH_SUCCESS -> "entry.created")
               }
           }
         )

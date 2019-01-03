@@ -8,7 +8,7 @@ import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.{Helpers, StubBodyParserFactory}
-import service.EntryService
+import services.EntryService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

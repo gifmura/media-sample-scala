@@ -1,4 +1,4 @@
-package service
+package services
 import com.google.inject.Singleton
 import javax.inject.Inject
 import jp.t2v.lab.play2.pager.{Pager, SearchResult}
