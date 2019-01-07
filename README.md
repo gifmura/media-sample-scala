@@ -52,6 +52,20 @@ Next, you need to install libsodium.
 brew install libsodium
 ```
 
+If you want to store image files to Amazon S3, you should set `conf/application.conf`.
+
+```bash
+# Change isEnabled true & set configuration if you store images to S3
+s3{
+    isEnabled = true
+    accessKey = ""          # Please set your access key here.
+    secretKey = ""          # Please set the secret key here.
+    bucketName = ""         # Please set your bucket name here.
+    serviceEndpoint = ""    # For example "s3-ap-northeast-1.amazonaws.com"
+    regionName = ""         # For example "ap-northeast-1"
+}
+```
+
 After that, you can start this app like below:
 
 ```bash
