@@ -76,6 +76,4 @@ sbt docker:publishLocal
 
 ## TODO
 
-- [ ] Upload images to Amazon S3
-- [ ] CI / CD by Circle CI
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png", sorry.)
