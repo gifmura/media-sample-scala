@@ -16,7 +16,7 @@ import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
 import play.core.parsers.Multipart.FileInfo
-import service.EntryService
+import services.EntryService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -24,10 +24,9 @@ class EntryController @Inject()(
     repo: EntryRepository,
     service: EntryService,
     cc: MessagesControllerComponents,
-    authenticatedUserAction: AuthenticatedUserAction
+    userAction: UserInfoAction
 )(implicit ec: ExecutionContext)
-    extends MessagesAbstractController(cc)
-    with play.api.i18n.I18nSupport {
+    extends MessagesAbstractController(cc) {
 
   private val logger = Logger(this.getClass)
 
@@ -41,48 +40,33 @@ class EntryController @Inject()(
 
   def index(pager: Pager[Entry]): Action[AnyContent] = Action.async {
     implicit request =>
-      repo.getEntries.map { p =>
+      repo.getEntries.map { _ =>
         Redirect(routes.EntryController.list(pager))
       }
   }
 
-  def edit = authenticatedUserAction { implicit request =>
-    logger.info(
-      s"UserId = ${request.session.get(Constant.SESSION_USER_KEY).get}")
+  def edit: Action[AnyContent] = userAction { implicit request =>
+    logger.info(s"$SESSION_ID = ${request.session.get(SESSION_ID)}")
     Ok(views.html.edit(entryForm))
   }
 
   def archive: Action[MultipartFormData[File]] =
-    authenticatedUserAction(parse.multipartFormData(handleFilePartAsFile))
+    userAction(parse.multipartFormData(handleFilePartAsFile))
       .async { implicit request =>
         entryForm.bindFromRequest.fold(
           errorForm => {
             Future.successful(Ok(views.html.edit(errorForm)))
           },
           entry => {
-            val imgFile = request.body.file("img").map {
-              case FilePart(key, filename, contentType, file) =>
-                logger.info(
-                  s"key = $key, filename = $filename, contentType = $contentType, file = $file")
-                val size = Files.size(file.toPath)
-                val path =
-                  if (size > 0)
-                    copyTempFile(file)
-                  else null
-                deleteTempFile(file)
-                (Option(path), Option(size))
-            }
-            val userId =
-              request.session.get(Constant.SESSION_USER_KEY).get.toLong
+            val userId = request.userInfo.get.userId.toLong
             service
-              .create(userId,
-                      entry.title,
-                      entry.content,
-                      imgFile.get._1,
-                      imgFile.get._2)
+              .createEntry(userId,
+                           entry.title,
+                           entry.content,
+                           request.body.file("img"))
               .map { _ =>
                 Redirect(routes.LandingPageController.showLandingPage())
-                  .flashing("success" -> "entry.created")
+                  .flashing(FLASH_SUCCESS -> "entry.created")
               }
           }
         )
@@ -116,19 +100,6 @@ class EntryController @Inject()(
           logger.info(s"count = $count, status = $status")
           FilePart(partName, filename, contentType, path.toFile)
       }
-  }
-
-  private def copyTempFile(tmpFile: File) = {
-    val src = tmpFile.toPath
-    val dest = ImageRepository.IMAGE_DIRECTORY.resolve(src.getFileName.toString)
-    logger.info(s"dest = $dest")
-    val newFile = Files.copy(src, dest)
-    newFile.toString
-  }
-
-  private def deleteTempFile(tmpFile: File) = {
-    val src = tmpFile.toPath
-    Files.deleteIfExists(src)
   }
 }
 

@@ -2,3 +2,8 @@ img{
     height: 300px;
     widows: 100;
 }
+
+textarea {
+    width: 600px;
+    height: 10em;
+}

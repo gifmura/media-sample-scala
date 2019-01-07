@@ -1,16 +1,22 @@
 package controllers
 
-import java.io.File
+import java.io.{File, InputStream}
 
+import akka.stream.scaladsl.{Source, StreamConverters}
+import akka.util.ByteString
 import javax.inject.Inject
 import models._
+import play.api.Configuration
 import play.api.mvc._
+import services.amazon.S3Service
 
 import scala.concurrent.ExecutionContext
 
 class ImageController @Inject()(
     repo: ImageRepository,
-    cc: MessagesControllerComponents
+    cc: MessagesControllerComponents,
+    config: Configuration,
+    s3Service: S3Service
 )(implicit ec: ExecutionContext)
     extends MessagesAbstractController(cc) {
 
@@ -19,13 +25,24 @@ class ImageController @Inject()(
       val images = repo.getImage(entryId)
       images.map { p =>
         val file = p.headOption.map { uri =>
-          val file = new File(uri)
-          file
+          if (config.get[Boolean]("aws.s3.isEnabled")) {
+            val s3is = s3Service.downloadS3(uri)
+            s3is
+          } else {
+            val file = new File(uri)
+            file
+          }
         }
         file match {
-          case Some(_) => Ok.sendFile(file.get)
-          case None    => Ok.sendFile(new File("./Public/images/blank.png"))
+          case None          => Ok.sendFile(new File("./Public/images/blank.png"))
+          case Some(f: File) => Ok.sendFile(f)
+          case Some(i: InputStream) => {
+            val dataContent: Source[ByteString, _] =
+              StreamConverters.fromInputStream(() => i)
+            Ok.chunked(dataContent)
+          }
         }
       }
   }
+
 }

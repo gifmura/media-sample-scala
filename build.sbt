@@ -16,6 +16,10 @@ libraryDependencies += "commons-io" % "commons-io" % "2.6"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 libraryDependencies += "jp.t2v" %% "play2-pager" % "0.2.0"
+libraryDependencies += "org.abstractj.kalium" % "kalium" % "0.6.0"
+libraryDependencies += "com.typesafe.akka" %% "akka-distributed-data" % "2.5.17"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.11.478"
+
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
