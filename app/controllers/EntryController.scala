@@ -58,26 +58,12 @@ class EntryController @Inject()(
             Future.successful(Ok(views.html.edit(errorForm)))
           },
           entry => {
-            val imgFile = request.body.file("img").map {
-              case FilePart(key, filename, contentType, file) =>
-                logger.info(
-                  s"key = $key, filename = $filename, contentType = $contentType, file = $file")
-                val size = Files.size(file.toPath)
-                val path =
-                  if (size > 0)
-                    copyTempFile(file)
-                  else null
-                deleteTempFile(file)
-                (Option(path), Option(size))
-            }
-            val userId =
-              request.userInfo.get.userId.toLong
+            val userId = request.userInfo.get.userId.toLong
             service
-              .create(userId,
-                      entry.title,
-                      entry.content,
-                      imgFile.get._1,
-                      imgFile.get._2)
+              .createEntry(userId,
+                           entry.title,
+                           entry.content,
+                           request.body.file("img"))
               .map { _ =>
                 Redirect(routes.LandingPageController.showLandingPage())
                   .flashing(FLASH_SUCCESS -> "entry.created")
@@ -114,19 +100,6 @@ class EntryController @Inject()(
           logger.info(s"count = $count, status = $status")
           FilePart(partName, filename, contentType, path.toFile)
       }
-  }
-
-  private def copyTempFile(tmpFile: File) = {
-    val src = tmpFile.toPath
-    val dest = ImageRepository.IMAGE_DIRECTORY.resolve(src.getFileName.toString)
-    logger.info(s"dest = $dest")
-    val newFile = Files.copy(src, dest)
-    newFile.toString
-  }
-
-  private def deleteTempFile(tmpFile: File) = {
-    val src = tmpFile.toPath
-    Files.deleteIfExists(src)
   }
 }
 

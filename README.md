@@ -4,17 +4,17 @@ This is a sample project for developers interested in Scala and Play Framework(2
 
 This project is featuring some basic and general topics like below:
 
-* Login & Logout
+* Authentication
 * Pagination
 * DB relationships
 * DB transactions
-* Upload and Display image files
-* Dockerize and Run
+* Dockerizing
 * Unit testing
 * Integration testing
 * Database testing
 * Service layer
-* Secure session management with akka
+* Secure session management with Akka
+* Upload image files to S3
 
 ## Preface
 
