@@ -55,7 +55,7 @@ brew install libsodium
 If you want to store image files to Amazon S3, you should set `conf/application.conf`.
 
 ```bash
-# Change isEnabled true & set configuration if you store images to S3
+# Change isEnabled true & set configuration if you store images to S3.
 s3{
     isEnabled = true
     accessKey = ""          # Please set your access key here.
