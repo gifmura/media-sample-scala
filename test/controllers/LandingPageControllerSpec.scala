@@ -1,6 +1,9 @@
-import controllers.LandingPageController
+package controllers
+
+import akka.util.ByteString
 import org.scalatestplus.play._
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.streams.Accumulator
 import play.api.mvc._
 import play.api.test.CSRFTokenHelper._
 import play.api.test.Helpers._
@@ -39,7 +42,8 @@ class LandingPageControllerSpec
       val controller =
         new LandingPageController(cc)
       val request: RequestHeader = FakeRequest().withCSRFToken
-      val result = controller.showLandingPage().apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.showLandingPage().apply(request)
 
       status(result) mustBe OK
     }
