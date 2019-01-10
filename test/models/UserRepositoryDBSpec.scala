@@ -1,4 +1,5 @@
-import models.UserRepository
+package models
+
 import org.scalatestplus.play._
 import play.api.Mode
 import play.api.db.slick.DatabaseConfigProvider
@@ -9,9 +10,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class UserRepositoryDBSpec extends PlaySpec {
 
-  lazy val appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().in(Mode.Test)
+  lazy val appBuilder: GuiceApplicationBuilder =
+    new GuiceApplicationBuilder().in(Mode.Test)
   lazy val injector: Injector = appBuilder.injector()
-  lazy val dbConfProvider: DatabaseConfigProvider = injector.instanceOf[DatabaseConfigProvider]
+  lazy val dbConfProvider: DatabaseConfigProvider =
+    injector.instanceOf[DatabaseConfigProvider]
 
   val model = new UserRepository(dbConfProvider)
   val timestamp: Long = System.currentTimeMillis / 1000
