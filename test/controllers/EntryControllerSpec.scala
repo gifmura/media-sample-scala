@@ -3,13 +3,11 @@ package controllers
 import java.io.File
 
 import akka.util.ByteString
-import javax.inject.Inject
 import jp.t2v.lab.play2.pager.{Pager, SearchResult}
 import models.{Entry, EntryRepository}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
-import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
@@ -18,10 +16,9 @@ import play.api.test.CSRFTokenHelper._
 import play.api.test.Helpers._
 import play.api.test._
 import services.EntryService
-import services.session.SessionService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class EntryControllerSpec
     extends PlaySpec
@@ -53,7 +50,7 @@ class EntryControllerSpec
   }
 
   "EntryController#index" should {
-    "be OK" in new WithApplication(
+    "should be OK" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
@@ -78,7 +75,7 @@ class EntryControllerSpec
   }
 
   "EntryController#edit" should {
-    "be OK if the session has started" in new WithApplication(
+    "should be OK if the session has started" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
@@ -103,7 +100,7 @@ class EntryControllerSpec
   }
 
   "EntryController#archive" should {
-    "be SEE_OTHER" in new WithApplication(
+    "should be SEE_OTHER" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
@@ -154,7 +151,7 @@ class EntryControllerSpec
   }
 
   "EntryController#list" should {
-    "be OK" in new WithApplication(
+    "should be OK" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
@@ -164,8 +161,8 @@ class EntryControllerSpec
       val title = "dummy-title"
       val content = "dummy-content"
       val totalCount = 1
-      val pager = Pager.default[Entry]
-      val dummySearchResult =
+      val pager: Pager[Entry] = Pager.default[Entry]
+      val dummySearchResult: SearchResult[Entry] =
         SearchResult[Entry](pager,
                             Seq(Entry(entryId, userId, title, content)),
                             totalCount)
@@ -190,7 +187,7 @@ class EntryControllerSpec
   }
 
   "EntryController#entry" should {
-    "be OK if specify registered entry id" in new WithApplication(
+    "should be OK if specify registered entry id" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
@@ -222,12 +219,12 @@ class EntryControllerSpec
   }
 
   "EntryController#entry" should {
-    "be Forbidden if specify not registered entry id" in new WithApplication(
+    "should be Forbidden if specify not registered entry id" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
-      val entryId = -1
+      val entryId = 0
       val mockedEntryRepository: EntryRepository = mock[EntryRepository]
       when(mockedEntryRepository.getEntry(entryId)) thenReturn Future {
         None
@@ -244,29 +241,8 @@ class EntryControllerSpec
       val result: Accumulator[ByteString, Result] =
         controller.entry(entryId).apply(request)
 
-      status(result) equals Forbidden
+      status(result) must equal(FORBIDDEN)
     }
   }
 
-}
-
-class DummyUserInfoAction @Inject()(
-    sessionService: SessionService,
-    factory: UserInfoCookieBakerFactory,
-    playBodyParsers: PlayBodyParsers,
-    messagesApi: MessagesApi
-)(override implicit val executionContext: ExecutionContext)
-    extends UserInfoAction(sessionService,
-                           factory,
-                           playBodyParsers,
-                           messagesApi)(executionContext)
-    with Results {
-
-  override def parser: BodyParser[AnyContent] = playBodyParsers.anyContent
-
-  override def invokeBlock[A](
-      request: Request[A],
-      block: UserRequest[A] => Future[Result]): Future[Result] = {
-    block(new UserRequest[A](request, Option(UserInfo("1")), messagesApi))
-  }
 }

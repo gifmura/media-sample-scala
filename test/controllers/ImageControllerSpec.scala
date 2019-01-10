@@ -2,6 +2,7 @@ package controllers
 
 import java.io.FileInputStream
 
+import akka.util.ByteString
 import com.amazonaws.services.s3.model.S3ObjectInputStream
 import models.ImageRepository
 import org.apache.http.client.methods.HttpGet
@@ -10,6 +11,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.streams.Accumulator
 import play.api.mvc._
 import play.api.test.CSRFTokenHelper._
 import play.api.test.Helpers._
@@ -69,7 +71,8 @@ class ImageControllerSpec
                             mockedConfig,
                             mockedS3Service)
       val request: RequestHeader = FakeRequest().withCSRFToken
-      val result = controller.image(entryId).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.image(entryId).apply(request)
 
       status(result) mustBe OK
       contentAsString(result).length > 0
@@ -106,7 +109,8 @@ class ImageControllerSpec
                             mockedConfig,
                             mockedS3Service)
       val request: RequestHeader = FakeRequest().withCSRFToken
-      val result = controller.image(entryId).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.image(entryId).apply(request)
 
       status(result) mustBe OK
       contentAsString(result).length > 0

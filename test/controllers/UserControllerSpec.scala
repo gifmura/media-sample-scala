@@ -1,12 +1,10 @@
 package controllers
 
 import akka.util.ByteString
-import javax.inject.Inject
 import models.{User, UserRepository}
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
-import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.streams.Accumulator
@@ -17,7 +15,7 @@ import play.api.test._
 import services.session.SessionService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class UserControllerSpec
     extends PlaySpec
@@ -179,7 +177,7 @@ class UserControllerSpec
       when(mockedUserRepository.getId(email, password)) thenReturn Future(
         Option(userId))
 
-      val sessionId = 1.toString
+      val sessionId: String = 1.toString
       val cookie = Cookie("userId", userId.toString)
       when(mockedSessionGenerator.createSession(UserInfo(userId.toString))) thenReturn Future(
         (sessionId, cookie))
@@ -289,26 +287,4 @@ class UserControllerSpec
     }
   }
 
-}
-
-class DummyUserInfoAction @Inject()(
-    sessionService: SessionService,
-    factory: UserInfoCookieBakerFactory,
-    playBodyParsers: PlayBodyParsers,
-    messagesApi: MessagesApi
-)(override implicit val executionContext: ExecutionContext)
-    extends UserInfoAction(sessionService,
-                           factory,
-                           playBodyParsers,
-                           messagesApi)(executionContext)
-    with Results {
-
-  override def parser: BodyParser[AnyContent] = playBodyParsers.anyContent
-
-  override def invokeBlock[A](
-      request: Request[A],
-      block: UserRequest[A] => Future[Result]): Future[Result] = {
-    block(
-      new UserRequest[A](request, Option(UserInfo(1.toString)), messagesApi))
-  }
 }
