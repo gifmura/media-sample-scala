@@ -1,4 +1,5 @@
-import models.ImageRepository
+package models
+
 import org.scalatestplus.play._
 import play.api.Mode
 import play.api.db.slick.DatabaseConfigProvider
@@ -16,8 +17,8 @@ class ImageRepositoryDBSpec extends PlaySpec {
     injector.instanceOf[DatabaseConfigProvider]
 
   val model = new ImageRepository(dbConfProvider)
-  // entryId = 1 is for testing.
-  val entryId = 1
+  val entryId = 1 // Please set the Entry Id registered with images.
+
   "ImageRepository#getImage" should {
     "return an uri of the image if it was already registered" in {
       val result = model.getImage(entryId)

@@ -1,12 +1,15 @@
+package controllers
+
 import java.io.File
 
-import controllers.{EntryController}
-import jp.t2v.lab.play2.pager.Pager
+import akka.util.ByteString
+import jp.t2v.lab.play2.pager.{Pager, SearchResult}
 import models.{Entry, EntryRepository}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.streams.Accumulator
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
 import play.api.test.CSRFTokenHelper._
@@ -24,8 +27,12 @@ class EntryControllerSpec
     with Results {
 
   val cc: MessagesControllerComponents = stubMessagesControllerComponents()
-  val mockedAuthUserAction: AuthenticatedUserAction =
-    mock[AuthenticatedUserAction]
+
+  val mockedUserAction: UserInfoAction = mock[UserInfoAction]
+
+  val mockedEntryRepository: EntryRepository = mock[EntryRepository]
+
+  val mockedEntryService: EntryService = mock[EntryService]
 
   def stubMessagesControllerComponents(): MessagesControllerComponents = {
     val stub = Helpers.stubControllerComponents()
@@ -43,125 +50,99 @@ class EntryControllerSpec
   }
 
   "EntryController#index" should {
-    "be OK" in new WithApplication(
+    "should be OK" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
       when(mockedEntryRepository.getEntries) thenReturn Future {
         Seq((1L, "dummy-title"), (2L, "dummy-title"))
       }
-      val mockedEntryService: EntryService = mock[EntryService]
+
       val controller =
         new EntryController(mockedEntryRepository,
                             mockedEntryService,
                             cc,
-                            mockedAuthUserAction)
+                            mockedUserAction)
 
       val request: RequestHeader =
         FakeRequest().withCSRFToken
-      val result = controller.index(Pager.default[Entry]).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.index(Pager.default[Entry]).apply(request)
 
-      status(result) mustBe OK
-      contentType(result) mustBe Some("text/html")
+      status(result) mustBe SEE_OTHER
     }
   }
 
   "EntryController#edit" should {
-    "be OK if the session has started" in new WithApplication(
+    "should be OK if the session has started" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
+      val dummyUserAction: DummyUserInfoAction =
+        app.injector.instanceOf[DummyUserInfoAction]
 
-      val action: AuthenticatedUserAction =
-        app.injector.instanceOf[AuthenticatedUserAction]
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
-      val mockedEntryService: EntryService = mock[EntryService]
       val controller =
         new EntryController(mockedEntryRepository,
                             mockedEntryService,
                             cc,
-                            action)
-      val session: (String, String) = (Constant.SESSION_USER_KEY, 1.toString)
+                            dummyUserAction)
+
       val request: RequestHeader =
-        FakeRequest().withSession(session).withCSRFToken
-      val result = controller.edit.apply(request)
+        FakeRequest().withCSRFToken
+      val result: Accumulator[ByteString, Result] =
+        controller.edit.apply(request)
 
       status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
-    }
-  }
-
-  "EntryController#edit" should {
-    "be FORBIDDEN if the session is empty" in new WithApplication(
-      GuiceApplicationBuilder()
-        .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
-        .build()
-    ) {
-
-      val action: AuthenticatedUserAction =
-        app.injector.instanceOf[AuthenticatedUserAction]
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
-      val mockedEntryService: EntryService = mock[EntryService]
-      val controller =
-        new EntryController(mockedEntryRepository,
-                            mockedEntryService,
-                            cc,
-                            action)
-      val request: RequestHeader =
-        FakeRequest().withSession().withCSRFToken
-      val result = controller.edit.apply(request)
-
-      status(result) mustBe FORBIDDEN
     }
   }
 
   "EntryController#archive" should {
-    "be SEE_OTHER" in new WithApplication(
+    "should be SEE_OTHER" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
+
       val userId = 1
       val title = "dummy-title"
       val content = "dummy-content"
-      val url = Option("/tmp/media-sample-scala/test.png")
-      val size = Option(46917L)
 
-      val action: AuthenticatedUserAction =
-        app.injector.instanceOf[AuthenticatedUserAction]
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
-      val mockedEntryService: EntryService = mock[EntryService]
-      when(mockedEntryService.create(userId, title, content, url, size)) thenReturn Future {
+      val key = "img"
+      val filename = "test.png"
+      val contentType = Option("image/png")
+      val file = new File("./Public/images/test.png")
+
+      val filePart = Option(FilePart[File](key, filename, contentType, file))
+
+      when(mockedEntryService.createEntry(userId, title, content, filePart)) thenReturn Future {
         1L
       }
+
+      val dummyUserAction: DummyUserInfoAction =
+        app.injector.instanceOf[DummyUserInfoAction]
       val controller =
         new EntryController(mockedEntryRepository,
                             mockedEntryService,
                             cc,
-                            action)
+                            dummyUserAction)
 
-      val form = Map(("title", Seq(title)), ("content", Seq(content)))
-      val file = new java.io.File("./Public/images/test.png")
-      val part: FilePart[File] = FilePart[File](key = "img",
-                                                filename = "blank.png",
-                                                contentType =
-                                                  Option("image/png"),
-                                                ref = file)
+      val form: Map[String, Seq[String]] =
+        Map(("title", Seq(title)), ("content", Seq(content)))
+
       val multiPart: MultipartFormData[File] =
         MultipartFormData[File](dataParts = form,
-                                files = Seq(part),
+                                files = Seq(filePart.get),
                                 badParts = Nil)
 
-      val session: (String, String) = (Constant.SESSION_USER_KEY, 1.toString)
       val request: RequestHeader =
         FakeRequest()
-          .withSession(session)
           .withBody(multiPart)
           .withCSRFToken
-      val result = controller.archive.apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.archive.apply(request)
       val expectedFlash = Flash(Map("success" -> "entry.created"))
 
       status(result) mustBe SEE_OTHER
@@ -170,52 +151,35 @@ class EntryControllerSpec
   }
 
   "EntryController#list" should {
-    "be OK" in new WithApplication(
-      GuiceApplicationBuilder()
-        .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
-        .build()
-    ) {
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
-      when(mockedEntryRepository.getEntries) thenReturn Future {
-        Seq((1L, "dummy-title"), (2L, "dummy-title"))
-      }
-      val mockedEntryService: EntryService = mock[EntryService]
-      val controller =
-        new EntryController(mockedEntryRepository,
-                            mockedEntryService,
-                            cc,
-                            mockedAuthUserAction)
-
-      val request: RequestHeader =
-        FakeRequest().withCSRFToken
-      val result = controller.list(Pager.default[Entry]).apply(request)
-
-      status(result) mustBe OK
-      contentType(result) mustBe Some("text/html")
-    }
-  }
-
-  "EntryController#entry" should {
-    "be OK if specify registered entry id" in new WithApplication(
+    "should be OK" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
       val entryId = 1
-      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
-      when(mockedEntryRepository.getEntry(entryId)) thenReturn Future {
-        Option(Entry(entryId, 1, "dummy-title", "dummy-content"))
+      val userId = 1
+      val title = "dummy-title"
+      val content = "dummy-content"
+      val totalCount = 1
+      val pager: Pager[Entry] = Pager.default[Entry]
+      val dummySearchResult: SearchResult[Entry] =
+        SearchResult[Entry](pager,
+                            Seq(Entry(entryId, userId, title, content)),
+                            totalCount)
+
+      when(mockedEntryService.findAll(null)) thenReturn Future {
+        dummySearchResult
       }
-      val mockedEntryService: EntryService = mock[EntryService]
       val controller =
         new EntryController(mockedEntryRepository,
                             mockedEntryService,
                             cc,
-                            mockedAuthUserAction)
+                            mockedUserAction)
 
       val request: RequestHeader =
         FakeRequest().withCSRFToken
-      val result = controller.entry(entryId).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.list(null).apply(request)
 
       status(result) mustBe OK
       contentType(result) mustBe Some("text/html")
@@ -223,12 +187,44 @@ class EntryControllerSpec
   }
 
   "EntryController#entry" should {
-    "be Forbidden if specify not registered entry id" in new WithApplication(
+    "should be OK if specify registered entry id" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
-      val entryId: Port = -1
+      val entryId = 1
+      val userId = 1
+      val title = "dummy-title"
+      val content = "dummy-content"
+
+      val mockedEntryRepository: EntryRepository = mock[EntryRepository]
+      when(mockedEntryRepository.getEntry(entryId)) thenReturn Future {
+        Option(Entry(entryId, userId, title, content))
+      }
+      val mockedEntryService: EntryService = mock[EntryService]
+      val controller =
+        new EntryController(mockedEntryRepository,
+                            mockedEntryService,
+                            cc,
+                            mockedUserAction)
+
+      val request: RequestHeader =
+        FakeRequest().withCSRFToken
+      val result: Accumulator[ByteString, Result] =
+        controller.entry(entryId).apply(request)
+
+      status(result) mustBe OK
+      contentType(result) mustBe Some("text/html")
+    }
+  }
+
+  "EntryController#entry" should {
+    "should be Forbidden if specify not registered entry id" in new WithApplication(
+      GuiceApplicationBuilder()
+        .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
+        .build()
+    ) {
+      val entryId = 0
       val mockedEntryRepository: EntryRepository = mock[EntryRepository]
       when(mockedEntryRepository.getEntry(entryId)) thenReturn Future {
         None
@@ -238,13 +234,14 @@ class EntryControllerSpec
         new EntryController(mockedEntryRepository,
                             mockedEntryService,
                             cc,
-                            mockedAuthUserAction)
+                            mockedUserAction)
 
       val request: RequestHeader =
         FakeRequest().withCSRFToken
-      val result = controller.entry(entryId).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.entry(entryId).apply(request)
 
-      status(result) equals Forbidden
+      status(result) must equal(FORBIDDEN)
     }
   }
 

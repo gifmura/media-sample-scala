@@ -1,4 +1,3 @@
-import models.Constant
 import org.junit.runner._
 import org.specs2.mutable._
 import org.specs2.runner._
@@ -16,7 +15,6 @@ class IntegrationSpec extends Specification {
   "Application" should {
 
     val userId: Long = 1
-    val timestamp: Long = System.currentTimeMillis / 1000
 
     "send 404 on a bad request" in new WithApplication {
       route(app, FakeRequest(GET, "/none-page")) must beSome.which(
@@ -48,7 +46,7 @@ class IntegrationSpec extends Specification {
       val logout: Future[mvc.Result] =
         route(app,
               FakeRequest(GET, "/logout").withSession(
-                Constant.SESSION_USER_KEY -> userId.toString)).get
+                controllers.SESSION_ID -> userId.toString)).get
       val expectedSession = Session()
 
       status(logout) must equalTo(SEE_OTHER)
@@ -66,7 +64,7 @@ class IntegrationSpec extends Specification {
       val edit: Future[mvc.Result] =
         route(app,
               FakeRequest(GET, "/edit").withSession(
-                Constant.SESSION_USER_KEY -> userId.toString)).get
+                controllers.SESSION_ID -> userId.toString)).get
 
       status(edit) must equalTo(OK)
       contentType(edit) must beSome.which(_ == "text/html")
@@ -76,7 +74,7 @@ class IntegrationSpec extends Specification {
       val entry: Future[mvc.Result] =
         route(app,
               FakeRequest(GET, "/entry/1").withSession(
-                Constant.SESSION_USER_KEY -> userId.toString)).get
+                controllers.SESSION_ID -> userId.toString)).get
 
       status(entry) must equalTo(OK)
       contentType(entry) must beSome.which(_ == "text/html")
@@ -118,7 +116,7 @@ class IntegrationSpec extends Specification {
       val attempt: Future[mvc.Result] = route(app, request).get
       val expectedFlash = Flash(Map("success" -> "You are logged in."))
       val expectedSession =
-        Session(Map(Constant.SESSION_USER_KEY -> userId.toString))
+        Session(Map(controllers.SESSION_ID -> userId.toString))
 
       status(attempt) must equalTo(SEE_OTHER)
       flash(attempt) must equalTo(expectedFlash)

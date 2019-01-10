@@ -1,20 +1,18 @@
-import controllers.ImageController
-import models.ImageRepository
-import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
+package controllers
+
+import akka.util.ByteString
 import org.scalatestplus.play._
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.streams.Accumulator
 import play.api.mvc._
 import play.api.test.CSRFTokenHelper._
 import play.api.test.Helpers._
 import play.api.test.{WithApplication, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
-class ImageControllerSpec
+class LandingPageControllerSpec
     extends PlaySpec
-    with MockitoSugar
     with StubBodyParserFactory
     with Results {
 
@@ -35,24 +33,19 @@ class ImageControllerSpec
     )
   }
 
-  "ImageController#image" should {
-    "should be OK if the entryId was registered" in new WithApplication(
+  "LandingPageController#showLandingPage" should {
+    "should be OK" in new WithApplication(
       GuiceApplicationBuilder()
         .configure("play.http.filters" -> "play.api.http.NoHttpFilters")
         .build()
     ) {
-      val entryId = 1
-      val mockedUserRepository: ImageRepository = mock[ImageRepository]
-      when(mockedUserRepository.getImage(entryId)) thenReturn Future {
-        Seq("./Public/images/blank.png")
-      }
       val controller =
-        new ImageController(mockedUserRepository, cc)
+        new LandingPageController(cc)
       val request: RequestHeader = FakeRequest().withCSRFToken
-      val result = controller.image(entryId).apply(request)
+      val result: Accumulator[ByteString, Result] =
+        controller.showLandingPage().apply(request)
 
       status(result) mustBe OK
-      contentAsString(result).length > 0
     }
   }
 
