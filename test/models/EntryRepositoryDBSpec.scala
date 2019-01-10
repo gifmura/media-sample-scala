@@ -1,4 +1,5 @@
-import models.EntryRepository
+package models
+
 import org.scalatestplus.play._
 import play.api.Mode
 import play.api.db.slick.DatabaseConfigProvider
@@ -17,7 +18,6 @@ class EntryRepositoryDBSpec extends PlaySpec {
 
   val model = new EntryRepository(dbConfProvider)
   val timestamp: Long = System.currentTimeMillis / 1000
-  // userId = 1 is for testing.
   val userId = 1
   val title = s"DB-Spec-title-$timestamp"
   val content = "DB-Spec-content-$timestamp"
