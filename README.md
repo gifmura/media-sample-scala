@@ -52,7 +52,7 @@ Next, you need to install libsodium.
 brew install libsodium
 ```
 
-If you want to store image files to Amazon S3, you should set `conf/application.conf`.
+If you want to store image files to Amazon S3, you need to set `conf/application.conf`.
 
 ```bash
 # Change isEnabled true & set configuration if you store images to S3.
@@ -83,10 +83,35 @@ Here is the repository of the app that dockerizing this app.
 
 If you want, you can build a new docker image like below.
 
+First of all, you need to create a Dockerfile.
+
 ```bash
 # Run within media-sample-scala directory.
-sbt docker:publishLocal
+sbt docker:stage
 ```
+After that, a directory with the Dockerfile and environment prepared for creating a Docker image will be generated in `target/docker`.
+
+Next, you need to set up installing libsodium in the Dockerfile like below.
+
+```bash
+# Add to the second line of the Dockerfile
+RUN apt-get update && apt-get install -y libsodium-dev
+```
+
+Next, you need to rewrite `slick.dbs.default.db.url` in `target/docker/stage/opt/docker/conf/application.conf` like below.
+
+```bash
+slick.dbs.default.db.url = "jdbc:mysql://db:3306/playdb"
+```
+
+After that, you can build a new docker image like below.
+
+```bash
+# Run within target/docker directory.
+docker build -t gifmura/media-sample-scala:latest .
+```
+
+Now you generate the new docker file and run that with [`gifmura/docker-sample`](https://github.com/gifmura/docker-sample)
 
 ## TODO
 
