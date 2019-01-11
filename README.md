@@ -94,7 +94,7 @@ After that, a directory with the Dockerfile and environment prepared for creatin
 Next, you need to set up installing libsodium in the Dockerfile like below.
 
 ```bash
-# Add to the second line of the Dockerfile
+# Add to the second line of the Dockerfile.
 RUN apt-get update && apt-get install -y libsodium-dev
 ```
 
