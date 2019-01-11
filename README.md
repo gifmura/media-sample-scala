@@ -111,7 +111,7 @@ After that, you can build a new docker image like below.
 docker build -t gifmura/media-sample-scala:latest .
 ```
 
-Now you generate the new docker file and run that with [`gifmura/docker-sample`](https://github.com/gifmura/docker-sample)
+Now you generate the new docker file and run that with [`gifmura/docker-sample`](https://github.com/gifmura/docker-sample).
 
 ## TODO
 
