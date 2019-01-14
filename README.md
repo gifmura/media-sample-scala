@@ -116,3 +116,9 @@ Now you generate the new docker file and run that with [`gifmura/docker-sample`]
 ## TODO
 
 - [ ] Correspond the uploading and displaying of images with multiple extensions. (Now it only supports ".png", sorry.)
+
+## Licence
+
+<a href="#media-sample-kotlin">Back to top</a>
+
+The MIT License (MIT 2019).
