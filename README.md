@@ -22,6 +22,8 @@ This project is intended to be used on Mac OS X or Linux.
 
 And following instructions are only for Mac OS X.
 
+But I prepared the Dockerize app [here](https://github.com/gifmura/docker-sample), so please use this for Windows or other.
+
 ## Usage
 
 *As with all Play projects, you must have JDK 1.8 and sbt installed.*
